@@ -1,5 +1,5 @@
 PKG_NAME := SPIRV-Headers
-URL = https://github.com/KhronosGroup/SPIRV-Headers/archive/e74c389f81915d0a48d6df1af83c3862c5ad85ab.tar.gz
+URL = https://github.com/KhronosGroup/SPIRV-Headers/archive/1.3.7.tar.gz
 ARCHIVES = 
 
 include ../common/Makefile.common
