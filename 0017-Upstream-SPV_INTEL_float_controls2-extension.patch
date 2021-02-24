@@ -1,0 +1,228 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Dmitry Sidorov <dmitry.sidorov@intel.com>
+Date: Mon, 9 Nov 2020 13:03:22 +0300
+Subject: [PATCH] Upstream SPV_INTEL_float_controls2 extension
+
+Spec:
+https://github.com/intel/llvm/blob/39fa9b0cbfbae88327118990a05c5b387b56d2ef/sycl/doc/extensions/SPIRV/SPV_INTEL_float_controls2.asciidoc
+
+Signed-off-by: Dmitry Sidorov <dmitry.sidorov@intel.com>
+---
+ .../spirv/unified1/spirv.core.grammar.json    | 119 ++++++++++++++++++
+ tools/buildHeaders/jsonToSpirv.cpp            |  10 ++
+ tools/buildHeaders/jsonToSpirv.h              |   2 +
+ 3 files changed, 131 insertions(+)
+
+diff --git a/include/spirv/unified1/spirv.core.grammar.json b/include/spirv/unified1/spirv.core.grammar.json
+index 2b538dd..9729d7a 100644
+--- a/include/spirv/unified1/spirv.core.grammar.json
++++ b/include/spirv/unified1/spirv.core.grammar.json
+@@ -8489,6 +8489,46 @@
+           "extensions" : [ "SPV_INTEL_vector_compute" ],
+           "version" : "None"
+         },
++        {
++          "enumerant" : "RoundingModeRTPINTEL",
++          "value" : 5620,
++          "parameters" : [
++            { "kind" : "LiteralInteger", "name" : "'Target Width'" }
++          ],
++          "capabilities" : [ "RoundToInfinityINTEL" ],
++          "extensions" : [ "SPV_INTEL_float_controls2" ],
++          "version" : "None"
++        },
++        {
++          "enumerant" : "RoundingModeRTNINTEL",
++          "value" : 5621,
++          "parameters" : [
++            { "kind" : "LiteralInteger", "name" : "'Target Width'" }
++          ],
++          "capabilities" : [ "RoundToInfinityINTEL" ],
++          "extensions" : [ "SPV_INTEL_float_controls2" ],
++          "version" : "None"
++        },
++        {
++          "enumerant" : "FloatingPointModeALTINTEL",
++          "value" : 5622,
++          "parameters" : [
++            { "kind" : "LiteralInteger", "name" : "'Target Width'" }
++          ],
++          "capabilities" : [ "RoundToInfinityINTEL" ],
++          "extensions" : [ "SPV_INTEL_float_controls2" ],
++          "version" : "None"
++        },
++        {
++          "enumerant" : "FloatingPointModeIEEEINTEL",
++          "value" : 5623,
++          "parameters" : [
++            { "kind" : "LiteralInteger", "name" : "'Target Width'" }
++          ],
++          "capabilities" : [ "RoundToInfinityINTEL" ],
++          "extensions" : [ "SPV_INTEL_float_controls2" ],
++          "version" : "None"
++        },
+         {
+           "enumerant" : "MaxWorkgroupSizeINTEL",
+           "value" : 5893,
+@@ -9244,6 +9284,34 @@
+         }
+       ]
+     },
++    {
++      "category" : "ValueEnum",
++      "kind" : "FPDenormMode",
++      "enumerants" : [
++        {
++          "enumerant" : "Preserve",
++          "value" : 0
++        },
++        {
++          "enumerant" : "FlushToZero",
++          "value" : 1
++        }
++      ]
++    },
++    {
++      "category" : "ValueEnum",
++      "kind" : "FPOperationMode",
++      "enumerants" : [
++        {
++          "enumerant" : "IEEE",
++          "value" : 0
++        },
++        {
++          "enumerant" : "ALT",
++          "value" : 1
++        }
++      ]
++    },
+     {
+       "category" : "ValueEnum",
+       "kind" : "LinkageType",
+@@ -9868,6 +9936,28 @@
+           "extensions" : [ "SPV_GOOGLE_user_type" ],
+           "version" : "None"
+         },
++        {
++          "enumerant" : "FunctionRoundingModeINTEL",
++          "value" : 5822,
++          "parameters" : [
++            { "kind" : "LiteralInteger", "name" : "'Target Width'" },
++            { "kind" : "FPRoundingMode", "name" : "'FP Rounding Mode'" }
++          ],
++          "capabilities" : [ "FunctionFloatControlINTEL" ],
++          "extensions" : [ "SPV_INTEL_float_controls2" ],
++          "version" : "None"
++        },
++        {
++          "enumerant" : "FunctionDenormModeINTEL",
++          "value" : 5823,
++          "parameters" : [
++            { "kind" : "LiteralInteger", "name" : "'Target Width'" },
++            { "kind" : "FPDenormMode", "name" : "'FP Denorm Mode'" }
++          ],
++          "capabilities" : [ "FunctionFloatControlINTEL" ],
++          "extensions" : [ "SPV_INTEL_float_controls2" ],
++          "version" : "None"
++        },
+         {
+           "enumerant" : "RegisterINTEL",
+           "value" : 5825,
+@@ -10031,6 +10121,17 @@
+           "extensions" : [ "SPV_INTEL_io_pipes" ],
+           "version" : "None"
+         },
++        {
++          "enumerant" : "FunctionFloatingPointModeINTEL",
++          "value" : 6080,
++          "parameters" : [
++            { "kind" : "LiteralInteger", "name" : "'Target Width'" },
++            { "kind" : "FPOperationMode", "name" : "'FP Operation Mode'" }
++          ],
++          "capabilities" : [ "FunctionFloatControlINTEL" ],
++          "extensions" : [ "SPV_INTEL_float_controls2" ],
++          "version" : "None"
++        },
+         {
+           "enumerant" : "SingleElementVectorINTEL",
+           "value" : 6085,
+@@ -11854,6 +11955,18 @@
+           "extensions" : [ "SPV_INTEL_media_block_io" ],
+           "version" : "None"
+         },
++        {
++          "enumerant" : "RoundToInfinityINTEL",
++          "value" : 5582,
++          "extensions" : [ "SPV_INTEL_float_controls2" ],
++          "version" : "None"
++        },
++        {
++          "enumerant" : "FloatingPointModeINTEL",
++          "value" : 5583,
++          "extensions" : [ "SPV_INTEL_float_controls2" ],
++          "version" : "None"
++        },
+         {
+           "enumerant" : "IntegerFunctions2INTEL",
+           "value" : 5584,
+@@ -11916,6 +12029,12 @@
+           "extensions" : [ "SPV_INTEL_variable_length_array" ],
+           "version" : "None"
+         },
++        {
++          "enumerant" : "FunctionFloatControlINTEL",
++          "value" : 5821,
++          "extensions" : [ "SPV_INTEL_float_controls2" ],
++          "version" : "None"
++        },
+         {
+           "enumerant" : "FPGAMemoryAttributesINTEL",
+           "value" : 5824,
+diff --git a/tools/buildHeaders/jsonToSpirv.cpp b/tools/buildHeaders/jsonToSpirv.cpp
+index 2118678..e5b1e3e 100644
+--- a/tools/buildHeaders/jsonToSpirv.cpp
++++ b/tools/buildHeaders/jsonToSpirv.cpp
+@@ -61,6 +61,8 @@ EnumValues ImageChannelDataTypeParams;
+ EnumValues ImageOperandsParams;
+ EnumValues FPFastMathParams;
+ EnumValues FPRoundingModeParams;
++EnumValues FPDenormModeParams;
++EnumValues FPOperationModeParams;
+ EnumValues LinkageTypeParams;
+ EnumValues DecorationParams;
+ EnumValues BuiltInParams;
+@@ -178,6 +180,10 @@ ClassOptionality ToOperandClassAndOptionality(const std::string& operandKind, co
+             type = OperandImageChannelDataType;
+         } else if (operandKind == "FPRoundingMode") {
+             type = OperandFPRoundingMode;
++        } else if (operandKind == "FPDenormMode") {
++            type = OperandFPDenormMode;
++        } else if (operandKind == "FPOperationMode") {
++            type = OperandFPOperationMode;
+         } else if (operandKind == "LinkageType") {
+             type = OperandLinkageType;
+         } else if (operandKind == "AccessQualifier") {
+@@ -452,6 +458,10 @@ void jsonToSpirv(const std::string& jsonPath, bool buildingHeaders)
+             establishOperandClass(enumName, OperandFPFastMath, &FPFastMathParams, operandEnum, category);
+         } else if (enumName == "FPRoundingMode") {
+             establishOperandClass(enumName, OperandFPRoundingMode, &FPRoundingModeParams, operandEnum, category);
++        } else if (enumName == "FPDenormMode") {
++            establishOperandClass(enumName, OperandFPDenormMode, &FPDenormModeParams, operandEnum, category);
++        } else if (enumName == "FPOperationMode") {
++            establishOperandClass(enumName, OperandFPOperationMode, &FPOperationModeParams, operandEnum, category);
+         } else if (enumName == "LinkageType") {
+             establishOperandClass(enumName, OperandLinkageType, &LinkageTypeParams, operandEnum, category);
+         } else if (enumName == "FunctionParameterAttribute") {
+diff --git a/tools/buildHeaders/jsonToSpirv.h b/tools/buildHeaders/jsonToSpirv.h
+index 72c7cde..572b872 100644
+--- a/tools/buildHeaders/jsonToSpirv.h
++++ b/tools/buildHeaders/jsonToSpirv.h
+@@ -69,6 +69,8 @@ enum OperandClass {
+     OperandImageOperands,
+     OperandFPFastMath,
+     OperandFPRoundingMode,
++    OperandFPDenormMode,
++    OperandFPOperationMode,
+     OperandLinkageType,
+     OperandAccessQualifier,
+     OperandFuncParamAttr,

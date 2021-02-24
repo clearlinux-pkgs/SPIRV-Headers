@@ -1,0 +1,73 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Dmitry Sidorov <dmitry.sidorov@intel.com>
+Date: Thu, 5 Nov 2020 13:01:03 +0300
+Subject: [PATCH] Upstream SPV_INTEL_variable_length_array extension
+
+Spec:
+https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/SPIRV/SPV_INTEL_variable_length_array.asciidoc
+
+Signed-off-by: Dmitry Sidorov <dmitry.sidorov@intel.com>
+---
+ .../spirv/unified1/spirv.core.grammar.json    | 42 +++++++++++++++++++
+ 1 file changed, 42 insertions(+)
+
+diff --git a/include/spirv/unified1/spirv.core.grammar.json b/include/spirv/unified1/spirv.core.grammar.json
+index 44b6897..b91f52c 100644
+--- a/include/spirv/unified1/spirv.core.grammar.json
++++ b/include/spirv/unified1/spirv.core.grammar.json
+@@ -6754,6 +6754,42 @@
+       "capabilities" : [ "SubgroupAvcMotionEstimationINTEL" ],
+       "version" : "None"
+     },
++    {
++      "opname" : "OpVariableLengthArrayINTEL",
++      "class"  : "@exclude",
++      "opcode" : 5818,
++      "operands" : [
++        { "kind" : "IdResultType" },
++        { "kind" : "IdResult" },
++        { "kind" : "IdRef", "name" : "'Lenght'" }
++      ],
++      "capabilities" : [ "VariableLengthArrayINTEL" ],
++      "extensions" : [ "SPV_INTEL_variable_length_array" ],
++      "version" : "None"
++    },
++    {
++      "opname" : "OpSaveMemoryINTEL",
++      "class"  : "@exclude",
++      "opcode" : 5819,
++      "operands" : [
++        { "kind" : "IdResultType" },
++        { "kind" : "IdResult" }
++      ],
++      "capabilities" : [ "VariableLengthArrayINTEL" ],
++      "extensions" : [ "SPV_INTEL_variable_length_array" ],
++      "version" : "None"
++    },
++    {
++      "opname" : "OpRestoreMemoryINTEL",
++      "class"  : "@exclude",
++      "opcode" : 5820,
++      "operands" : [
++        { "kind" : "IdRef", "name" : "'Ptr'" }
++      ],
++      "capabilities" : [ "VariableLengthArrayINTEL" ],
++      "extensions" : [ "SPV_INTEL_variable_length_array" ],
++      "version" : "None"
++    },
+     {
+       "opname" : "OpLoopControlINTEL",
+       "class"  : "Reserved",
+@@ -11732,6 +11768,12 @@
+           "extensions" : [ "SPV_INTEL_device_side_avc_motion_estimation" ],
+           "version" : "None"
+         },
++        {
++          "enumerant" : "VariableLengthArrayINTEL",
++          "value" : 5817,
++          "extensions" : [ "SPV_INTEL_variable_length_array" ],
++          "version" : "None"
++        },
+         {
+           "enumerant" : "FPGAMemoryAttributesINTEL",
+           "value" : 5824,

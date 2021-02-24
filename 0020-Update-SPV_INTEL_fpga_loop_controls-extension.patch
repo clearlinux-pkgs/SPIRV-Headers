@@ -1,0 +1,31 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Dmitry Sidorov <dmitry.sidorov@intel.com>
+Date: Mon, 23 Nov 2020 11:09:22 +0300
+Subject: [PATCH] Update SPV_INTEL_fpga_loop_controls extension
+
+Signed-off-by: Dmitry Sidorov <dmitry.sidorov@intel.com>
+---
+ include/spirv/unified1/spirv.core.grammar.json | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/include/spirv/unified1/spirv.core.grammar.json b/include/spirv/unified1/spirv.core.grammar.json
+index edf3b71..ede8f6d 100644
+--- a/include/spirv/unified1/spirv.core.grammar.json
++++ b/include/spirv/unified1/spirv.core.grammar.json
+@@ -7553,6 +7553,16 @@
+           "capabilities" : [ "FPGALoopControlsINTEL" ],
+           "extensions" : [ "SPV_INTEL_fpga_loop_controls" ],
+           "version" : "None"
++        },
++        {
++          "enumerant" : "NoFusionINTEL",
++          "value" : "0x800000",
++          "parameters" : [
++            { "kind" : "LiteralInteger" }
++          ],
++          "capabilities" : [ "FPGALoopControlsINTEL" ],
++          "extensions" : [ "SPV_INTEL_fpga_loop_controls" ],
++          "version" : "None"
+         }
+       ]
+     },

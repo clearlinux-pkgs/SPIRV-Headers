@@ -1,0 +1,47 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Dmitry Sidorov <dmitry.sidorov@intel.com>
+Date: Tue, 3 Nov 2020 16:52:47 +0300
+Subject: [PATCH] Upstream SPV_INTEL_fpga_buffer_location extension
+
+Spec:
+https://github.com/intel/llvm/blob/2237b42035f31cb10b16d4f9abaeed45bed98587/sycl/doc/extensions/SPIRV/SPV_INTEL_fpga_buffer_location.asciidoc
+
+Signed-off-by: Dmitry Sidorov <dmitry.sidorov@intel.com>
+---
+ include/spirv/unified1/spirv.core.grammar.json | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+diff --git a/include/spirv/unified1/spirv.core.grammar.json b/include/spirv/unified1/spirv.core.grammar.json
+index 44e7298..ef03cf6 100644
+--- a/include/spirv/unified1/spirv.core.grammar.json
++++ b/include/spirv/unified1/spirv.core.grammar.json
+@@ -9765,6 +9765,16 @@
+           "capabilities" : [ "FPGAMemoryAttributesINTEL" ],
+           "extensions" : [ "SPV_INTEL_fpga_memory_attributes" ],
+           "version" : "None"
++        },
++        {
++          "enumerant" : "BufferLocationINTEL",
++          "value" : 5921,
++          "parameters" : [
++            { "kind" : "LiteralInteger", "name" : "'Buffer Location ID'" }
++          ],
++          "capabilities" : [ "FPGABufferLocationINTEL" ],
++          "extensions" : [ "SPV_INTEL_fpga_buffer_location" ],
++          "version" : "None"
+         }
+       ]
+     },
+@@ -11642,6 +11652,12 @@
+           "extensions" : [ "SPV_INTEL_kernel_attributes" ],
+           "version" : "None"
+         },
++        {
++          "enumerant" : "FPGABufferLocationINTEL",
++          "value" : 5920,
++          "extensions" : [ "SPV_INTEL_fpga_buffer_location" ],
++          "version" : "None"
++        },
+         {
+           "enumerant" : "BlockingPipesINTEL",
+           "value" : 5945,

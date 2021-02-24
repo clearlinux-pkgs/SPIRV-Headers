@@ -1,0 +1,64 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Dmitry Sidorov <dmitry.sidorov@intel.com>
+Date: Wed, 16 Dec 2020 19:34:22 +0300
+Subject: [PATCH] Add SPV_INTEL_long_constant_composite extension
+
+Signed-off-by: Dmitry Sidorov <dmitry.sidorov@intel.com>
+---
+ .../spirv/unified1/spirv.core.grammar.json    | 36 +++++++++++++++++++
+ 1 file changed, 36 insertions(+)
+
+diff --git a/include/spirv/unified1/spirv.core.grammar.json b/include/spirv/unified1/spirv.core.grammar.json
+index e494c3b..9f39e18 100644
+--- a/include/spirv/unified1/spirv.core.grammar.json
++++ b/include/spirv/unified1/spirv.core.grammar.json
+@@ -7214,6 +7214,36 @@
+       ],
+       "capabilities" : [ "VectorComputeINTEL" ],
+       "version" : "None"
++    },
++    {
++      "opname" : "OpTypeStructContinuedINTEL",
++      "class"  : "Type-Declaration",
++      "opcode" : 6090,
++      "operands" : [
++        { "kind" : "IdRef",    "quantifier" : "*", "name" : "'Member 0 type', +\n'member 1 type', +\n..." }
++      ],
++      "capabilities" : [ "LongConstantCompositeINTEL" ],
++      "version" : "None"
++    },
++    {
++      "opname" : "OpConstantCompositeContinuedINTEL",
++      "class"  : "Constant-Creation",
++      "opcode" : 6091,
++      "operands" : [
++        { "kind" : "IdRef",        "quantifier" : "*", "name" : "'Constituents'" }
++      ],
++      "capabilities" : [ "LongConstantCompositeINTEL" ],
++      "version" : "None"
++    },
++    {
++      "opname" : "OpSpecConstantCompositeContinuedINTEL",
++      "class"  : "Constant-Creation",
++      "opcode" : 6092,
++      "operands" : [
++        { "kind" : "IdRef",        "quantifier" : "*", "name" : "'Constituents'" }
++      ],
++      "capabilities" : [ "LongConstantCompositeINTEL" ],
++      "version" : "None"
+     }
+   ],
+   "operand_kinds" : [
+@@ -12185,6 +12215,12 @@
+           "capabilities" : [ "Shader" ],
+           "extensions" : [ "SPV_EXT_shader_atomic_float_add" ],
+           "version" : "None"
++        },
++        {
++          "enumerant" : "LongConstantCompositeINTEL",
++          "value" : 6089,
++          "extensions" : [ "SPV_INTEL_long_constant_composite" ],
++          "version" : "None"
+         }
+       ]
+     },

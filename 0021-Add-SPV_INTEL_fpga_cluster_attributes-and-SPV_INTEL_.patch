@@ -1,0 +1,79 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Dmitry Sidorov <dmitry.sidorov@intel.com>
+Date: Mon, 23 Nov 2020 11:19:33 +0300
+Subject: [PATCH] Add SPV_INTEL_fpga_cluster_attributes and
+ SPV_INTEL_fp_fast_math_mode
+
+Spec:
+https://github.com/KhronosGroup/SPIRV-Registry/blob/7d96a31cf56c60de76a6ae7a26ace3c7bfd999bf/extensions/INTEL/SPV_INTEL_fpga_cluster_attributes.asciidoc
+https://github.com/KhronosGroup/SPIRV-Registry/blob/7d96a31cf56c60de76a6ae7a26ace3c7bfd999bf/extensions/INTEL/SPV_INTEL_fp_fast_math_mode.asciidoc
+
+Signed-off-by: Dmitry Sidorov <dmitry.sidorov@intel.com>
+---
+ .../spirv/unified1/spirv.core.grammar.json    | 32 +++++++++++++++++++
+ 1 file changed, 32 insertions(+)
+
+diff --git a/include/spirv/unified1/spirv.core.grammar.json b/include/spirv/unified1/spirv.core.grammar.json
+index ede8f6d..9ce7243 100644
+--- a/include/spirv/unified1/spirv.core.grammar.json
++++ b/include/spirv/unified1/spirv.core.grammar.json
+@@ -7394,6 +7394,18 @@
+           "enumerant" : "Fast",
+           "value" : "0x0010",
+           "capabilities" : [ "Kernel" ]
++        },
++        {
++          "enumerant" : "AllowContractFastINTEL",
++          "value" : "0x10000",
++          "capabilities" : [ "FPFastMathModeINTEL" ],
++          "extensions" : [ "SPV_INTEL_fp_fast_math_mode" ]
++        },
++        {
++          "enumerant" : "AllowReassocINTEL",
++          "value" : "0x20000",
++          "capabilities" : [ "FPFastMathModeINTEL" ],
++          "extensions" : [ "SPV_INTEL_fp_fast_math_mode" ]
+         }
+       ]
+     },
+@@ -10121,6 +10133,13 @@
+           "extensions" : [ "SPV_INTEL_fpga_memory_accesses" ],
+           "version" : "None"
+         },
++        {
++          "enumerant" : "StallEnableINTEL",
++          "value" : 5905,
++          "capabilities" : [ "FPGAClusterAttributesINTEL" ],
++          "extensions" : [ "SPV_INTEL_fpga_cluster_attributes" ],
++          "version" : "None"
++        },
+         {
+           "enumerant" : "BufferLocationINTEL",
+           "value" : 5921,
+@@ -12061,6 +12080,13 @@
+           "extensions" : [ "SPV_INTEL_fpga_memory_attributes" ],
+           "version" : "None"
+         },
++        {
++          "enumerant" : "FPFastMathModeINTEL",
++          "value" : 5837,
++          "capabilities" : [ "Kernel" ],
++          "extensions" : [ "SPV_INTEL_fp_fast_math_mode" ],
++          "version" : "None"
++        },
+         {
+           "enumerant" : "ArbitraryPrecisionIntegersINTEL",
+           "value" : 5844,
+@@ -12097,6 +12123,12 @@
+           "extensions" : [ "SPV_INTEL_fpga_memory_accesses" ],
+           "version" : "None"
+         },
++        {
++          "enumerant" : "FPGAClusterAttributesINTEL",
++          "value" : 5904,
++          "extensions" : [ "SPV_INTEL_fpga_cluster_attributes" ],
++          "version" : "None"
++        },
+         {
+           "enumerant" : "FPGABufferLocationINTEL",
+           "value" : 5920,

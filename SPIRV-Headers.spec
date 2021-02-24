@@ -4,7 +4,7 @@
 #
 Name     : SPIRV-Headers
 Version  : 1.5.4
-Release  : 9
+Release  : 10
 URL      : https://github.com/KhronosGroup/SPIRV-Headers/archive/1.5.4/SPIRV-Headers-1.5.4.tar.gz
 Source0  : https://github.com/KhronosGroup/SPIRV-Headers/archive/1.5.4/SPIRV-Headers-1.5.4.tar.gz
 Summary  : No detailed summary available
@@ -12,6 +12,37 @@ Group    : Development/Tools
 License  : MIT
 Requires: SPIRV-Headers-license = %{version}-%{release}
 BuildRequires : buildreq-cmake
+Patch1: 0001-Add-EmbarkStudios-rust-gpu-to-vendor-list.-174.patch
+Patch2: 0002-Reserve-additional-loop-control-bit-for-Intel-extens.patch
+Patch3: 0003-Updated-headers-for-new-trace-executeCallable-and-ac.patch
+Patch4: 0004-Raytracing-and-Rayquery-updates-for-final.patch
+Patch5: 0005-de-alias-reassign-OpIgnoreIntersectionKHR-OpTerminat.patch
+Patch6: 0006-MeshShadingNV-enables-builtins-PrimitiveId-Layer-and.patch
+Patch7: 0007-remove-HitTKHR.patch
+Patch8: 0008-add-function-control-bitfield-reservation-section-re.patch
+Patch9: 0009-Upstream-SPV_INTEL_fpga_buffer_location-extension.patch
+Patch10: 0010-Upstream-SPV_INTEL_inline_assembly-extension.patch
+Patch11: 0011-Upstream-SPV_INTEL_arbitrary_precision_integers-exte.patch
+Patch12: 0012-Upstream-SPV_INTEL_usm_storage_classes-extension.patch
+Patch13: 0013-Upstream-SPV_INTEL_variable_length_array-extension.patch
+Patch14: 0014-Upstream-SPV_INTEL_io_pipes-extension.patch
+Patch15: 0015-Upstream-SPV_INTEL_fpga_memory_accesses-extension.patch
+Patch16: 0016-Upstream-SPV_INTEL_vector_compute-extension.patch
+Patch17: 0017-Upstream-SPV_INTEL_float_controls2-extension.patch
+Patch18: 0018-Update-SPV_INTEL_function_pointers-extension.patch
+Patch19: 0019-Update-SPV_INTEL_kernel_attributes-extension.patch
+Patch20: 0020-Update-SPV_INTEL_fpga_loop_controls-extension.patch
+Patch21: 0021-Add-SPV_INTEL_fpga_cluster_attributes-and-SPV_INTEL_.patch
+Patch22: 0022-Add-SPV_INTEL_loop_fuse-extension.patch
+Patch23: 0023-Add-SPV_INTEL_long_constant_composite-extension.patch
+Patch24: 0024-Update-generated-files.patch
+Patch25: 0025-Apply-suggestions-to-Intel-extensions-PR.patch
+Patch26: 0026-Push-FPDenormMode-FPOperationMode-to-the-end.patch
+Patch27: 0027-Add-SPV_KHR_workgroup_memory_explicit_layout.patch
+Patch28: 0028-add-None-as-a-possible-value-for-DebugInfoFlags.patch
+Patch29: 0029-add-generated-headers.patch
+Patch30: 0030-Header-generator-Check-enumerant-ordering.patch
+Patch31: 0031-Add-header-changes-for-SPV_EXT_shader_atomic_float_m.patch
 
 %description
 # SPIR-V Headers
@@ -40,13 +71,44 @@ license components for the SPIRV-Headers package.
 %prep
 %setup -q -n SPIRV-Headers-1.5.4
 cd %{_builddir}/SPIRV-Headers-1.5.4
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
+%patch4 -p1
+%patch5 -p1
+%patch6 -p1
+%patch7 -p1
+%patch8 -p1
+%patch9 -p1
+%patch10 -p1
+%patch11 -p1
+%patch12 -p1
+%patch13 -p1
+%patch14 -p1
+%patch15 -p1
+%patch16 -p1
+%patch17 -p1
+%patch18 -p1
+%patch19 -p1
+%patch20 -p1
+%patch21 -p1
+%patch22 -p1
+%patch23 -p1
+%patch24 -p1
+%patch25 -p1
+%patch26 -p1
+%patch27 -p1
+%patch28 -p1
+%patch29 -p1
+%patch30 -p1
+%patch31 -p1
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1603510149
+export SOURCE_DATE_EPOCH=1614207526
 mkdir -p clr-build
 pushd clr-build
 export GCC_IGNORE_WERROR=1
@@ -59,7 +121,7 @@ make  %{?_smp_mflags}
 popd
 
 %install
-export SOURCE_DATE_EPOCH=1603510149
+export SOURCE_DATE_EPOCH=1614207526
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/SPIRV-Headers
 cp %{_builddir}/SPIRV-Headers-1.5.4/LICENSE %{buildroot}/usr/share/package-licenses/SPIRV-Headers/9a84200f47e09abfbde1a6b25028460451b23d03

@@ -1,0 +1,361 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: alelenv <alele@nvidia.com>
+Date: Mon, 15 Jun 2020 11:08:39 -0700
+Subject: [PATCH] Updated headers for new trace/executeCallable and
+ acceleration structure cast.
+
+---
+ .../spirv/unified1/spirv.core.grammar.json    | 88 +++++++++++--------
+ include/spirv/unified1/spirv.cs               |  5 +-
+ include/spirv/unified1/spirv.h                |  8 +-
+ include/spirv/unified1/spirv.hpp              |  8 +-
+ include/spirv/unified1/spirv.hpp11            |  8 +-
+ include/spirv/unified1/spirv.json             |  5 +-
+ include/spirv/unified1/spirv.lua              |  5 +-
+ include/spirv/unified1/spirv.py               |  5 +-
+ include/spirv/unified1/spv.d                  |  5 +-
+ 9 files changed, 82 insertions(+), 55 deletions(-)
+
+diff --git a/include/spirv/unified1/spirv.core.grammar.json b/include/spirv/unified1/spirv.core.grammar.json
+index 18901cd..0ccbe24 100644
+--- a/include/spirv/unified1/spirv.core.grammar.json
++++ b/include/spirv/unified1/spirv.core.grammar.json
+@@ -4196,6 +4196,51 @@
+       "extensions" : [ "SPV_KHR_shader_ballot" ],
+       "version" : "None"
+     },
++    {
++      "opname" : "OpTraceRayKHR",
++      "class"  : "Reserved",
++      "opcode" : 4445,
++      "operands" : [
++
++        { "kind" : "IdRef", "name" : "'Accel'" },
++        { "kind" : "IdRef", "name" : "'Ray Flags'" },
++        { "kind" : "IdRef", "name" : "'Cull Mask'" },
++        { "kind" : "IdRef", "name" : "'SBT Offset'" },
++        { "kind" : "IdRef", "name" : "'SBT Stride'" },
++        { "kind" : "IdRef", "name" : "'Miss Index'" },
++        { "kind" : "IdRef", "name" : "'Ray Origin'" },
++        { "kind" : "IdRef", "name" : "'Ray Tmin'" },
++        { "kind" : "IdRef", "name" : "'Ray Direction'" },
++        { "kind" : "IdRef", "name" : "'Ray Tmax'" },
++        { "kind" : "IdRef", "name" : "'Payload'" }
++      ],
++      "capabilities" : [ "RayTracingProvisionalKHR" ],
++      "extensions" : [ "SPV_KHR_ray_tracing" ],
++      "version" : "None"
++    },
++    {
++      "opname" : "OpExecuteCallableKHR",
++      "class"  : "Reserved",
++      "opcode" : 4446,
++      "operands" : [
++
++        { "kind" : "IdRef", "name" : "'SBT Index'" },
++        { "kind" : "IdRef", "name" : "'Callable Data'" }
++      ],
++      "capabilities" : [ "RayTracingProvisionalKHR" ],
++      "extensions" : [ "SPV_KHR_ray_tracing" ],
++      "version" : "None"
++    },
++    {
++      "opname" : "OpConvertUToAccelerationStructureKHR",
++      "class"  : "Reserved",
++      "opcode" : 4447,
++      "operands" : [
++        { "kind" : "IdResultType" },
++        { "kind" : "IdResult" },
++        { "kind" : "IdRef",        "name" : "'Operand'" }
++      ]
++    },
+     {
+         "opname" : "OpTypeRayQueryProvisionalKHR",
+         "class" : "Reserved",
+@@ -4614,30 +4659,8 @@
+         { "kind" : "IdRef", "name" : "'Ray Tmax'" },
+         { "kind" : "IdRef", "name" : "'PayloadId'" }
+       ],
+-      "capabilities" : [ "RayTracingNV" , "RayTracingProvisionalKHR" ],
+-      "extensions" : [ "SPV_NV_ray_tracing" , "SPV_KHR_ray_tracing" ],
+-      "version" : "None"
+-    },
+-    {
+-      "opname" : "OpTraceRayKHR",
+-      "class"  : "Reserved",
+-      "opcode" : 5337,
+-      "operands" : [
+-
+-        { "kind" : "IdRef", "name" : "'Accel'" },
+-        { "kind" : "IdRef", "name" : "'Ray Flags'" },
+-        { "kind" : "IdRef", "name" : "'Cull Mask'" },
+-        { "kind" : "IdRef", "name" : "'SBT Offset'" },
+-        { "kind" : "IdRef", "name" : "'SBT Stride'" },
+-        { "kind" : "IdRef", "name" : "'Miss Index'" },
+-        { "kind" : "IdRef", "name" : "'Ray Origin'" },
+-        { "kind" : "IdRef", "name" : "'Ray Tmin'" },
+-        { "kind" : "IdRef", "name" : "'Ray Direction'" },
+-        { "kind" : "IdRef", "name" : "'Ray Tmax'" },
+-        { "kind" : "IdRef", "name" : "'PayloadId'" }
+-      ],
+-      "capabilities" : [ "RayTracingNV" , "RayTracingProvisionalKHR" ],
+-      "extensions" : [ "SPV_NV_ray_tracing" , "SPV_KHR_ray_tracing" ],
++      "capabilities" : [ "RayTracingNV" ],
++      "extensions" : [ "SPV_NV_ray_tracing" ],
+       "version" : "None"
+     },
+     {
+@@ -4671,21 +4694,8 @@
+         { "kind" : "IdRef", "name" : "'SBT Index'" },
+         { "kind" : "IdRef", "name" : "'Callable DataId'" }
+       ],
+-      "capabilities" : [ "RayTracingNV" , "RayTracingProvisionalKHR" ],
+-      "extensions" : [ "SPV_NV_ray_tracing" , "SPV_KHR_ray_tracing" ],
+-      "version" : "None"
+-    },
+-    {
+-      "opname" : "OpExecuteCallableKHR",
+-      "class"  : "Reserved",
+-      "opcode" : 5344,
+-      "operands" : [
+-
+-        { "kind" : "IdRef", "name" : "'SBT Index'" },
+-        { "kind" : "IdRef", "name" : "'Callable DataId'" }
+-      ],
+-      "capabilities" : [ "RayTracingNV" , "RayTracingProvisionalKHR" ],
+-      "extensions" : [ "SPV_NV_ray_tracing" , "SPV_KHR_ray_tracing" ],
++      "capabilities" : [ "RayTracingNV" ],
++      "extensions" : [ "SPV_NV_ray_tracing" ],
+       "version" : "None"
+     },
+     {
+diff --git a/include/spirv/unified1/spirv.cs b/include/spirv/unified1/spirv.cs
+index 0419c0f..229b9ba 100644
+--- a/include/spirv/unified1/spirv.cs
++++ b/include/spirv/unified1/spirv.cs
+@@ -1404,6 +1404,9 @@ namespace Spv
+             OpSubgroupAnyKHR = 4429,
+             OpSubgroupAllEqualKHR = 4430,
+             OpSubgroupReadInvocationKHR = 4432,
++            OpTraceRayKHR = 4445,
++            OpExecuteCallableKHR = 4446,
++            OpConvertUToAccelerationStructureKHR = 4447,
+             OpTypeRayQueryProvisionalKHR = 4472,
+             OpRayQueryInitializeKHR = 4473,
+             OpRayQueryTerminateKHR = 4474,
+@@ -1432,10 +1435,8 @@ namespace Spv
+             OpTerminateRayKHR = 5336,
+             OpTerminateRayNV = 5336,
+             OpTraceNV = 5337,
+-            OpTraceRayKHR = 5337,
+             OpTypeAccelerationStructureKHR = 5341,
+             OpTypeAccelerationStructureNV = 5341,
+-            OpExecuteCallableKHR = 5344,
+             OpExecuteCallableNV = 5344,
+             OpTypeCooperativeMatrixNV = 5358,
+             OpCooperativeMatrixLoadNV = 5359,
+diff --git a/include/spirv/unified1/spirv.h b/include/spirv/unified1/spirv.h
+index 4e36b3a..e899684 100644
+--- a/include/spirv/unified1/spirv.h
++++ b/include/spirv/unified1/spirv.h
+@@ -1402,6 +1402,9 @@ typedef enum SpvOp_ {
+     SpvOpSubgroupAnyKHR = 4429,
+     SpvOpSubgroupAllEqualKHR = 4430,
+     SpvOpSubgroupReadInvocationKHR = 4432,
++    SpvOpTraceRayKHR = 4445,
++    SpvOpExecuteCallableKHR = 4446,
++    SpvOpConvertUToAccelerationStructureKHR = 4447,
+     SpvOpTypeRayQueryProvisionalKHR = 4472,
+     SpvOpRayQueryInitializeKHR = 4473,
+     SpvOpRayQueryTerminateKHR = 4474,
+@@ -1430,10 +1433,8 @@ typedef enum SpvOp_ {
+     SpvOpTerminateRayKHR = 5336,
+     SpvOpTerminateRayNV = 5336,
+     SpvOpTraceNV = 5337,
+-    SpvOpTraceRayKHR = 5337,
+     SpvOpTypeAccelerationStructureKHR = 5341,
+     SpvOpTypeAccelerationStructureNV = 5341,
+-    SpvOpExecuteCallableKHR = 5344,
+     SpvOpExecuteCallableNV = 5344,
+     SpvOpTypeCooperativeMatrixNV = 5358,
+     SpvOpCooperativeMatrixLoadNV = 5359,
+@@ -1973,6 +1974,9 @@ inline void SpvHasResultAndType(SpvOp opcode, bool *hasResult, bool *hasResultTy
+     case SpvOpSubgroupAnyKHR: *hasResult = true; *hasResultType = true; break;
+     case SpvOpSubgroupAllEqualKHR: *hasResult = true; *hasResultType = true; break;
+     case SpvOpSubgroupReadInvocationKHR: *hasResult = true; *hasResultType = true; break;
++    case SpvOpTraceRayKHR: *hasResult = false; *hasResultType = false; break;
++    case SpvOpExecuteCallableKHR: *hasResult = false; *hasResultType = false; break;
++    case SpvOpConvertUToAccelerationStructureKHR: *hasResult = true; *hasResultType = true; break;
+     case SpvOpTypeRayQueryProvisionalKHR: *hasResult = true; *hasResultType = false; break;
+     case SpvOpRayQueryInitializeKHR: *hasResult = false; *hasResultType = false; break;
+     case SpvOpRayQueryTerminateKHR: *hasResult = false; *hasResultType = false; break;
+diff --git a/include/spirv/unified1/spirv.hpp b/include/spirv/unified1/spirv.hpp
+index 988545c..21aabe8 100644
+--- a/include/spirv/unified1/spirv.hpp
++++ b/include/spirv/unified1/spirv.hpp
+@@ -1398,6 +1398,9 @@ enum Op {
+     OpSubgroupAnyKHR = 4429,
+     OpSubgroupAllEqualKHR = 4430,
+     OpSubgroupReadInvocationKHR = 4432,
++    OpTraceRayKHR = 4445,
++    OpExecuteCallableKHR = 4446,
++    OpConvertUToAccelerationStructureKHR = 4447,
+     OpTypeRayQueryProvisionalKHR = 4472,
+     OpRayQueryInitializeKHR = 4473,
+     OpRayQueryTerminateKHR = 4474,
+@@ -1426,10 +1429,8 @@ enum Op {
+     OpTerminateRayKHR = 5336,
+     OpTerminateRayNV = 5336,
+     OpTraceNV = 5337,
+-    OpTraceRayKHR = 5337,
+     OpTypeAccelerationStructureKHR = 5341,
+     OpTypeAccelerationStructureNV = 5341,
+-    OpExecuteCallableKHR = 5344,
+     OpExecuteCallableNV = 5344,
+     OpTypeCooperativeMatrixNV = 5358,
+     OpCooperativeMatrixLoadNV = 5359,
+@@ -1969,6 +1970,9 @@ inline void HasResultAndType(Op opcode, bool *hasResult, bool *hasResultType) {
+     case OpSubgroupAnyKHR: *hasResult = true; *hasResultType = true; break;
+     case OpSubgroupAllEqualKHR: *hasResult = true; *hasResultType = true; break;
+     case OpSubgroupReadInvocationKHR: *hasResult = true; *hasResultType = true; break;
++    case OpTraceRayKHR: *hasResult = false; *hasResultType = false; break;
++    case OpExecuteCallableKHR: *hasResult = false; *hasResultType = false; break;
++    case OpConvertUToAccelerationStructureKHR: *hasResult = true; *hasResultType = true; break;
+     case OpTypeRayQueryProvisionalKHR: *hasResult = true; *hasResultType = false; break;
+     case OpRayQueryInitializeKHR: *hasResult = false; *hasResultType = false; break;
+     case OpRayQueryTerminateKHR: *hasResult = false; *hasResultType = false; break;
+diff --git a/include/spirv/unified1/spirv.hpp11 b/include/spirv/unified1/spirv.hpp11
+index 1e7d12e..81b059b 100644
+--- a/include/spirv/unified1/spirv.hpp11
++++ b/include/spirv/unified1/spirv.hpp11
+@@ -1398,6 +1398,9 @@ enum class Op : unsigned {
+     OpSubgroupAnyKHR = 4429,
+     OpSubgroupAllEqualKHR = 4430,
+     OpSubgroupReadInvocationKHR = 4432,
++    OpTraceRayKHR = 4445,
++    OpExecuteCallableKHR = 4446,
++    OpConvertUToAccelerationStructureKHR = 4447,
+     OpTypeRayQueryProvisionalKHR = 4472,
+     OpRayQueryInitializeKHR = 4473,
+     OpRayQueryTerminateKHR = 4474,
+@@ -1426,10 +1429,8 @@ enum class Op : unsigned {
+     OpTerminateRayKHR = 5336,
+     OpTerminateRayNV = 5336,
+     OpTraceNV = 5337,
+-    OpTraceRayKHR = 5337,
+     OpTypeAccelerationStructureKHR = 5341,
+     OpTypeAccelerationStructureNV = 5341,
+-    OpExecuteCallableKHR = 5344,
+     OpExecuteCallableNV = 5344,
+     OpTypeCooperativeMatrixNV = 5358,
+     OpCooperativeMatrixLoadNV = 5359,
+@@ -1969,6 +1970,9 @@ inline void HasResultAndType(Op opcode, bool *hasResult, bool *hasResultType) {
+     case Op::OpSubgroupAnyKHR: *hasResult = true; *hasResultType = true; break;
+     case Op::OpSubgroupAllEqualKHR: *hasResult = true; *hasResultType = true; break;
+     case Op::OpSubgroupReadInvocationKHR: *hasResult = true; *hasResultType = true; break;
++    case Op::OpTraceRayKHR: *hasResult = false; *hasResultType = false; break;
++    case Op::OpExecuteCallableKHR: *hasResult = false; *hasResultType = false; break;
++    case Op::OpConvertUToAccelerationStructureKHR: *hasResult = true; *hasResultType = true; break;
+     case Op::OpTypeRayQueryProvisionalKHR: *hasResult = true; *hasResultType = false; break;
+     case Op::OpRayQueryInitializeKHR: *hasResult = false; *hasResultType = false; break;
+     case Op::OpRayQueryTerminateKHR: *hasResult = false; *hasResultType = false; break;
+diff --git a/include/spirv/unified1/spirv.json b/include/spirv/unified1/spirv.json
+index 8353274..a628e1e 100644
+--- a/include/spirv/unified1/spirv.json
++++ b/include/spirv/unified1/spirv.json
+@@ -1384,6 +1384,9 @@
+                     "OpSubgroupAnyKHR": 4429,
+                     "OpSubgroupAllEqualKHR": 4430,
+                     "OpSubgroupReadInvocationKHR": 4432,
++                    "OpTraceRayKHR": 4445,
++                    "OpExecuteCallableKHR": 4446,
++                    "OpConvertUToAccelerationStructureKHR": 4447,
+                     "OpTypeRayQueryProvisionalKHR": 4472,
+                     "OpRayQueryInitializeKHR": 4473,
+                     "OpRayQueryTerminateKHR": 4474,
+@@ -1412,10 +1415,8 @@
+                     "OpTerminateRayKHR": 5336,
+                     "OpTerminateRayNV": 5336,
+                     "OpTraceNV": 5337,
+-                    "OpTraceRayKHR": 5337,
+                     "OpTypeAccelerationStructureKHR": 5341,
+                     "OpTypeAccelerationStructureNV": 5341,
+-                    "OpExecuteCallableKHR": 5344,
+                     "OpExecuteCallableNV": 5344,
+                     "OpTypeCooperativeMatrixNV": 5358,
+                     "OpCooperativeMatrixLoadNV": 5359,
+diff --git a/include/spirv/unified1/spirv.lua b/include/spirv/unified1/spirv.lua
+index d97af41..e677fa9 100644
+--- a/include/spirv/unified1/spirv.lua
++++ b/include/spirv/unified1/spirv.lua
+@@ -1354,6 +1354,9 @@ spv = {
+         OpSubgroupAnyKHR = 4429,
+         OpSubgroupAllEqualKHR = 4430,
+         OpSubgroupReadInvocationKHR = 4432,
++        OpTraceRayKHR = 4445,
++        OpExecuteCallableKHR = 4446,
++        OpConvertUToAccelerationStructureKHR = 4447,
+         OpTypeRayQueryProvisionalKHR = 4472,
+         OpRayQueryInitializeKHR = 4473,
+         OpRayQueryTerminateKHR = 4474,
+@@ -1382,10 +1385,8 @@ spv = {
+         OpTerminateRayKHR = 5336,
+         OpTerminateRayNV = 5336,
+         OpTraceNV = 5337,
+-        OpTraceRayKHR = 5337,
+         OpTypeAccelerationStructureKHR = 5341,
+         OpTypeAccelerationStructureNV = 5341,
+-        OpExecuteCallableKHR = 5344,
+         OpExecuteCallableNV = 5344,
+         OpTypeCooperativeMatrixNV = 5358,
+         OpCooperativeMatrixLoadNV = 5359,
+diff --git a/include/spirv/unified1/spirv.py b/include/spirv/unified1/spirv.py
+index 869b7f3..7bbe20a 100644
+--- a/include/spirv/unified1/spirv.py
++++ b/include/spirv/unified1/spirv.py
+@@ -1354,6 +1354,9 @@ spv = {
+         'OpSubgroupAnyKHR' : 4429,
+         'OpSubgroupAllEqualKHR' : 4430,
+         'OpSubgroupReadInvocationKHR' : 4432,
++        'OpTraceRayKHR' : 4445,
++        'OpExecuteCallableKHR' : 4446,
++        'OpConvertUToAccelerationStructureKHR' : 4447,
+         'OpTypeRayQueryProvisionalKHR' : 4472,
+         'OpRayQueryInitializeKHR' : 4473,
+         'OpRayQueryTerminateKHR' : 4474,
+@@ -1382,10 +1385,8 @@ spv = {
+         'OpTerminateRayKHR' : 5336,
+         'OpTerminateRayNV' : 5336,
+         'OpTraceNV' : 5337,
+-        'OpTraceRayKHR' : 5337,
+         'OpTypeAccelerationStructureKHR' : 5341,
+         'OpTypeAccelerationStructureNV' : 5341,
+-        'OpExecuteCallableKHR' : 5344,
+         'OpExecuteCallableNV' : 5344,
+         'OpTypeCooperativeMatrixNV' : 5358,
+         'OpCooperativeMatrixLoadNV' : 5359,
+diff --git a/include/spirv/unified1/spv.d b/include/spirv/unified1/spv.d
+index 714e77f..ada47f5 100644
+--- a/include/spirv/unified1/spv.d
++++ b/include/spirv/unified1/spv.d
+@@ -1407,6 +1407,9 @@ enum Op : uint
+     OpSubgroupAnyKHR = 4429,
+     OpSubgroupAllEqualKHR = 4430,
+     OpSubgroupReadInvocationKHR = 4432,
++    OpTraceRayKHR = 4445,
++    OpExecuteCallableKHR = 4446,
++    OpConvertUToAccelerationStructureKHR = 4447,
+     OpTypeRayQueryProvisionalKHR = 4472,
+     OpRayQueryInitializeKHR = 4473,
+     OpRayQueryTerminateKHR = 4474,
+@@ -1435,10 +1438,8 @@ enum Op : uint
+     OpTerminateRayKHR = 5336,
+     OpTerminateRayNV = 5336,
+     OpTraceNV = 5337,
+-    OpTraceRayKHR = 5337,
+     OpTypeAccelerationStructureKHR = 5341,
+     OpTypeAccelerationStructureNV = 5341,
+-    OpExecuteCallableKHR = 5344,
+     OpExecuteCallableNV = 5344,
+     OpTypeCooperativeMatrixNV = 5358,
+     OpCooperativeMatrixLoadNV = 5359,

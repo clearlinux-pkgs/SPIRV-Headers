@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Dmitry Sidorov <dmitry.sidorov@intel.com>
+Date: Mon, 9 Nov 2020 16:05:22 +0300
+Subject: [PATCH] Update SPV_INTEL_function_pointers extension
+
+Signed-off-by: Dmitry Sidorov <dmitry.sidorov@intel.com>
+---
+ include/spirv/unified1/spirv.core.grammar.json | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/spirv/unified1/spirv.core.grammar.json b/include/spirv/unified1/spirv.core.grammar.json
+index 9729d7a..29b7333 100644
+--- a/include/spirv/unified1/spirv.core.grammar.json
++++ b/include/spirv/unified1/spirv.core.grammar.json
+@@ -5123,7 +5123,7 @@
+       "version" : "None"
+     },
+     {
+-      "opname" : "OpFunctionPointerINTEL",
++      "opname" : "OpConstFunctionPointerINTEL",
+       "class"  : "@exclude",
+       "opcode" : 5600,
+       "operands" : [

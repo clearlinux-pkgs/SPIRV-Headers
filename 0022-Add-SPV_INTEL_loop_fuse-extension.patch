@@ -1,0 +1,41 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Dmitry Sidorov <dmitry.sidorov@intel.com>
+Date: Wed, 16 Dec 2020 18:47:50 +0300
+Subject: [PATCH] Add SPV_INTEL_loop_fuse extension
+
+Signed-off-by: Dmitry Sidorov <dmitry.sidorov@intel.com>
+---
+ include/spirv/unified1/spirv.core.grammar.json | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/include/spirv/unified1/spirv.core.grammar.json b/include/spirv/unified1/spirv.core.grammar.json
+index 9ce7243..e494c3b 100644
+--- a/include/spirv/unified1/spirv.core.grammar.json
++++ b/include/spirv/unified1/spirv.core.grammar.json
+@@ -10140,6 +10140,13 @@
+           "extensions" : [ "SPV_INTEL_fpga_cluster_attributes" ],
+           "version" : "None"
+         },
++        {
++          "enumerant" : "FuseLoopsInFunctionINTEL",
++          "value" : 5907,
++          "capabilities" : [ "LoopFuseINTEL" ],
++          "extensions" : [ "SPV_INTEL_loop_fuse" ],
++          "version" : "None"
++        },
+         {
+           "enumerant" : "BufferLocationINTEL",
+           "value" : 5921,
+@@ -12129,6 +12136,12 @@
+           "extensions" : [ "SPV_INTEL_fpga_cluster_attributes" ],
+           "version" : "None"
+         },
++        {
++          "enumerant" : "LoopFuseINTEL",
++          "value" : 5906,
++          "extensions" : [ "SPV_INTEL_loop_fuse" ],
++          "version" : "None"
++        },
+         {
+           "enumerant" : "FPGABufferLocationINTEL",
+           "value" : 5920,

@@ -1,0 +1,25 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Mike Kinsner <michael.kinsner@intel.com>
+Date: Wed, 4 Nov 2020 22:58:17 -0400
+Subject: [PATCH] Reserve additional loop control bit for Intel extension
+ (NoFusionINTEL) (#175)
+
+---
+ include/spirv/spir-v.xml | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/include/spirv/spir-v.xml b/include/spirv/spir-v.xml
+index 478ad83..d1ebaab 100644
+--- a/include/spirv/spir-v.xml
++++ b/include/spirv/spir-v.xml
+@@ -180,8 +180,8 @@
+ 
+     <!-- Reserved loop control bits -->
+     <ids type="LoopControl" start="0" end="15" vendor="Khronos" comment="Reserved LoopControl bits, not available to vendors - see the SPIR-V Specification"/>
+-    <ids type="LoopControl" start="16" end="22" vendor="Intel" comment="Contact michael.kinsner@intel.com"/>
+-    <ids type="LoopControl" start="23" end="30" comment="Unreserved bits reservable for use by vendors"/>
++    <ids type="LoopControl" start="16" end="23" vendor="Intel" comment="Contact michael.kinsner@intel.com"/>
++    <ids type="LoopControl" start="24" end="30" comment="Unreserved bits reservable for use by vendors"/>
+     <ids type="LoopControl" start="31" end="31" vendor="Khronos" comment="Reserved LoopControl bit, not available to vendors"/>
+ 
+ 

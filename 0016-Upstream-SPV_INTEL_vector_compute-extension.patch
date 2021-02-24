@@ -1,0 +1,170 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Dmitry Sidorov <dmitry.sidorov@intel.com>
+Date: Mon, 9 Nov 2020 12:18:01 +0300
+Subject: [PATCH] Upstream SPV_INTEL_vector_compute extension
+
+Spec:
+https://github.com/intel/llvm/blob/e185a6b49e4bc9806a799b774977f1196b24f0d6/sycl/doc/extensions/SPIRV/SPV_INTEL_vector_compute.asciidoc
+
+Signed-off-by: Dmitry Sidorov <dmitry.sidorov@intel.com>
+---
+ .../spirv/unified1/spirv.core.grammar.json    | 104 +++++++++++++++++-
+ 1 file changed, 101 insertions(+), 3 deletions(-)
+
+diff --git a/include/spirv/unified1/spirv.core.grammar.json b/include/spirv/unified1/spirv.core.grammar.json
+index cb5bb25..2b538dd 100644
+--- a/include/spirv/unified1/spirv.core.grammar.json
++++ b/include/spirv/unified1/spirv.core.grammar.json
+@@ -7204,6 +7204,16 @@
+       "capabilities" : [ "AtomicFloat32AddEXT", "AtomicFloat64AddEXT" ],
+       "extensions" : [ "SPV_EXT_shader_atomic_float_add" ],
+       "version" : "None"
++    },
++    {
++      "opname" : "OpTypeBufferSurfaceINTEL",
++      "class"  : "Type-Declaration",
++      "opcode" : 6086,
++      "operands" : [
++        { "kind" : "IdResult" }
++      ],
++      "capabilities" : [ "VectorComputeINTEL" ],
++      "version" : "None"
+     }
+   ],
+   "operand_kinds" : [
+@@ -8469,6 +8479,16 @@
+           "extensions" : [ "SPV_EXT_fragment_shader_interlock" ],
+           "version" : "None"
+         },
++        {
++          "enumerant" : "SharedLocalMemorySizeINTEL",
++          "value" : 5618,
++          "parameters" : [
++            { "kind" : "LiteralInteger", "name" : "'Size'" }
++          ],
++          "capabilities" : [ "VectorComputeINTEL" ],
++          "extensions" : [ "SPV_INTEL_vector_compute" ],
++          "version" : "None"
++        },
+         {
+           "enumerant" : "MaxWorkgroupSizeINTEL",
+           "value" : 5893,
+@@ -9730,6 +9750,16 @@
+           "extensions" : [ "SPV_EXT_physical_storage_buffer" ],
+           "version" : "1.5"
+         },
++        {
++          "enumerant" : "SIMTCallINTEL",
++          "value" : 5599,
++          "parameters" : [
++            { "kind" : "LiteralInteger", "name" : "'N'" }
++          ],
++          "capabilities" : [ "VectorComputeINTEL" ],
++          "extensions" : [ "SPV_INTEL_vector_compute" ],
++          "version" : "None"
++        },
+         {
+           "enumerant" : "ReferencedIndirectlyINTEL",
+           "value" : 5602,
+@@ -9754,6 +9784,47 @@
+           "extensions" : [ "SPV_INTEL_inline_assembly" ],
+           "version" : "None"
+         },
++        {
++          "enumerant" : "VectorComputeVariableINTEL",
++          "value" : 5624,
++          "capabilities" : [ "VectorComputeINTEL" ],
++          "extensions" : [ "SPV_INTEL_vector_compute" ],
++          "version" : "None"
++        },
++        {
++          "enumerant" : "FuncParamIOKindINTEL",
++          "value" : 5625,
++          "parameters" : [
++            { "kind" : "LiteralInteger", "name" : "'Kind'" }
++          ],
++          "capabilities" : [ "VectorComputeINTEL" ],
++          "extensions" : [ "SPV_INTEL_vector_compute" ],
++          "version" : "None"
++        },
++        {
++          "enumerant" : "VectorComputeFunctionINTEL",
++          "value" : 5626,
++          "capabilities" : [ "VectorComputeINTEL" ],
++          "extensions" : [ "SPV_INTEL_vector_compute" ],
++          "version" : "None"
++        },
++        {
++          "enumerant" : "StackCallINTEL",
++          "value" : 5627,
++          "capabilities" : [ "VectorComputeINTEL" ],
++          "extensions" : [ "SPV_INTEL_vector_compute" ],
++          "version" : "None"
++        },
++        {
++          "enumerant" : "GlobalVariableOffsetINTEL",
++          "value" : 5628,
++          "parameters" : [
++            { "kind" : "LiteralInteger", "name" : "'Offset'" }
++          ],
++          "capabilities" : [ "VectorComputeINTEL" ],
++          "extensions" : [ "SPV_INTEL_vector_compute" ],
++          "version" : "None"
++        },
+         {
+           "enumerant" : "CounterBuffer",
+           "value" : 5634,
+@@ -9959,6 +10030,20 @@
+           "capabilities" : [ "IOPipesINTEL" ],
+           "extensions" : [ "SPV_INTEL_io_pipes" ],
+           "version" : "None"
++        },
++        {
++          "enumerant" : "SingleElementVectorINTEL",
++          "value" : 6085,
++          "capabilities" : [ "VectorComputeINTEL" ],
++          "extensions" : [ "SPV_INTEL_vector_compute" ],
++          "version" : "None"
++        },
++        {
++          "enumerant" : "VectorComputeCallableFunctionINTEL",
++          "value" : 6087,
++          "capabilities" : [ "VectorComputeINTEL" ],
++          "extensions" : [ "SPV_INTEL_vector_compute" ],
++          "version" : "None"
+         }
+       ]
+     },
+@@ -11782,6 +11867,12 @@
+           "extensions" : [ "SPV_INTEL_function_pointers" ],
+           "version" : "None"
+         },
++        {
++          "enumerant" : "IndirectReferencesINTEL",
++          "value" : 5604,
++          "extensions" : [ "SPV_INTEL_function_pointers" ],
++          "version" : "None"
++        },
+         {
+           "enumerant" : "AsmINTEL",
+           "value" : 5606,
+@@ -11789,9 +11880,16 @@
+           "version" : "None"
+         },
+         {
+-          "enumerant" : "IndirectReferencesINTEL",
+-          "value" : 5604,
+-          "extensions" : [ "SPV_INTEL_function_pointers" ],
++          "enumerant" : "VectorComputeINTEL",
++          "value" : 5617,
++          "capabilities" : [ "VectorAnyINTEL" ],
++          "extensions" : [ "SPV_INTEL_vector_compute" ],
++          "version" : "None"
++        },
++        {
++          "enumerant" : "VectorAnyINTEL",
++          "value" : 5619,
++          "extensions" : [ "SPV_INTEL_vector_compute" ],
+           "version" : "None"
+         },
+         {

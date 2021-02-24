@@ -1,0 +1,34 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Ben Ashbaugh <ben.ashbaugh@intel.com>
+Date: Wed, 27 Jan 2021 08:50:30 -0800
+Subject: [PATCH] add generated headers
+
+---
+ include/spirv/unified1/DebugInfo.h          | 1 +
+ include/spirv/unified1/OpenCLDebugInfo100.h | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/include/spirv/unified1/DebugInfo.h b/include/spirv/unified1/DebugInfo.h
+index c50a131..4657556 100644
+--- a/include/spirv/unified1/DebugInfo.h
++++ b/include/spirv/unified1/DebugInfo.h
+@@ -78,6 +78,7 @@ enum DebugInfoInstructions {
+ 
+ 
+ enum DebugInfoDebugInfoFlags {
++    DebugInfoNone = 0x0000,
+     DebugInfoFlagIsProtected = 0x01,
+     DebugInfoFlagIsPrivate = 0x02,
+     DebugInfoFlagIsPublic = 0x03,
+diff --git a/include/spirv/unified1/OpenCLDebugInfo100.h b/include/spirv/unified1/OpenCLDebugInfo100.h
+index 1149980..7285bd4 100644
+--- a/include/spirv/unified1/OpenCLDebugInfo100.h
++++ b/include/spirv/unified1/OpenCLDebugInfo100.h
+@@ -80,6 +80,7 @@ enum OpenCLDebugInfo100Instructions {
+ 
+ 
+ enum OpenCLDebugInfo100DebugInfoFlags {
++    OpenCLDebugInfo100None = 0x0000,
+     OpenCLDebugInfo100FlagIsProtected = 0x01,
+     OpenCLDebugInfo100FlagIsPrivate = 0x02,
+     OpenCLDebugInfo100FlagIsPublic = 0x03,
