@@ -4,10 +4,10 @@
 # Using build pattern: cmake
 #
 Name     : SPIRV-Headers
-Version  : 1.3.250.0
-Release  : 11
-URL      : https://github.com/KhronosGroup/SPIRV-Headers/archive/sdk-1.3.250.0/SPIRV-Headers-sdk-1.3.250.0.tar.gz
-Source0  : https://github.com/KhronosGroup/SPIRV-Headers/archive/sdk-1.3.250.0/SPIRV-Headers-sdk-1.3.250.0.tar.gz
+Version  : 1.3.261.0
+Release  : 12
+URL      : https://github.com/KhronosGroup/SPIRV-Headers/archive/sdk-1.3.261.0/SPIRV-Headers-1.3.261.0.tar.gz
+Source0  : https://github.com/KhronosGroup/SPIRV-Headers/archive/sdk-1.3.261.0/SPIRV-Headers-1.3.261.0.tar.gz
 Summary  : Header files from the SPIR-V registry
 Group    : Development/Tools
 License  : MIT
@@ -53,15 +53,15 @@ license components for the SPIRV-Headers package.
 
 
 %prep
-%setup -q -n SPIRV-Headers-sdk-1.3.250.0
-cd %{_builddir}/SPIRV-Headers-sdk-1.3.250.0
+%setup -q -n SPIRV-Headers-sdk-1.3.261.0
+cd %{_builddir}/SPIRV-Headers-sdk-1.3.261.0
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1686787072
+export SOURCE_DATE_EPOCH=1693250124
 mkdir -p clr-build
 pushd clr-build
 export GCC_IGNORE_WERROR=1
@@ -74,7 +74,7 @@ make  %{?_smp_mflags}
 popd
 
 %install
-export SOURCE_DATE_EPOCH=1686787072
+export SOURCE_DATE_EPOCH=1693250124
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/SPIRV-Headers
 cp %{_builddir}/SPIRV-Headers-sdk-%{version}/LICENSE %{buildroot}/usr/share/package-licenses/SPIRV-Headers/9a84200f47e09abfbde1a6b25028460451b23d03 || :
