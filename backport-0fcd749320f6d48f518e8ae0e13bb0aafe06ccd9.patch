@@ -1,0 +1,417 @@
+From 0fcd749320f6d48f518e8ae0e13bb0aafe06ccd9 Mon Sep 17 00:00:00 2001
+From: Victor Lomuller <victor@codeplay.com>
+Date: Wed, 19 Mar 2025 15:44:59 +0000
+Subject: [PATCH] Add grammar entries for SPV_INTEL_task_sequence (#494)
+
+fixes #492
+---
+ include/spirv/unified1/spirv.bf               |  6 ++
+ .../spirv/unified1/spirv.core.grammar.json    | 65 +++++++++++++++++++
+ include/spirv/unified1/spirv.cs               |  6 ++
+ include/spirv/unified1/spirv.h                | 17 +++++
+ include/spirv/unified1/spirv.hpp              | 17 +++++
+ include/spirv/unified1/spirv.hpp11            | 17 +++++
+ include/spirv/unified1/spirv.json             |  6 ++
+ include/spirv/unified1/spirv.lua              |  6 ++
+ include/spirv/unified1/spirv.py               |  6 ++
+ include/spirv/unified1/spv.d                  |  6 ++
+ 10 files changed, 152 insertions(+)
+
+diff --git a/include/spirv/unified1/spirv.bf b/include/spirv/unified1/spirv.bf
+index ff17530..5b74255 100644
+--- a/include/spirv/unified1/spirv.bf
++++ b/include/spirv/unified1/spirv.bf
+@@ -1294,6 +1294,7 @@ namespace Spv
+             ArithmeticFenceEXT = 6144,
+             FPGAClusterAttributesV2INTEL = 6150,
+             FPGAKernelAttributesv2INTEL = 6161,
++            TaskSequenceINTEL = 6162,
+             FPMaxErrorINTEL = 6169,
+             FPGALatencyControlINTEL = 6171,
+             FPGAArgumentInterfacesINTEL = 6174,
+@@ -2417,6 +2418,11 @@ namespace Spv
+             OpControlBarrierArriveINTEL = 6142,
+             OpControlBarrierWaitINTEL = 6143,
+             OpArithmeticFenceEXT = 6145,
++            OpTaskSequenceCreateINTEL = 6163,
++            OpTaskSequenceAsyncINTEL = 6164,
++            OpTaskSequenceGetINTEL = 6165,
++            OpTaskSequenceReleaseINTEL = 6166,
++            OpTypeTaskSequenceINTEL = 6199,
+             OpSubgroupBlockPrefetchINTEL = 6221,
+             OpSubgroup2DBlockLoadINTEL = 6231,
+             OpSubgroup2DBlockLoadTransformINTEL = 6232,
+diff --git a/include/spirv/unified1/spirv.core.grammar.json b/include/spirv/unified1/spirv.core.grammar.json
+index c230caf..432b167 100644
+--- a/include/spirv/unified1/spirv.core.grammar.json
++++ b/include/spirv/unified1/spirv.core.grammar.json
+@@ -10457,6 +10457,65 @@
+       "capabilities" : [ "ArithmeticFenceEXT" ],
+       "version" : "None"
+     },
++    {
++      "opname" : "OpTaskSequenceCreateINTEL",
++      "class"  : "Reserved",
++      "opcode" : 6163,
++      "operands" : [
++        { "kind" : "IdResultType" },
++        { "kind" : "IdResult" },
++        { "kind" : "IdRef",          "name" : "'Function'" },
++        { "kind" : "LiteralInteger",  "name" : "'Pipelined'" },
++        { "kind" : "LiteralInteger",  "name" : "'UseStallEnableClusters'" },
++        { "kind" : "LiteralInteger",  "name" : "'GetCapacity'" },
++        { "kind" : "LiteralInteger",  "name" : "'AsyncCapacity'" }
++      ],
++      "capabilities" : [ "TaskSequenceINTEL" ],
++      "version" : "None"
++    },
++    {
++      "opname" : "OpTaskSequenceAsyncINTEL",
++      "class"  : "Reserved",
++      "opcode" : 6164,
++      "operands" : [
++        { "kind" : "IdRef",          "name" : "'Sequence'" },
++        { "kind" : "IdRef", "quantifier" : "*",  "name" : "'Arguments'" }
++      ],
++      "capabilities" : [ "TaskSequenceINTEL" ],
++      "version" : "None"
++    },
++    {
++      "opname" : "OpTaskSequenceGetINTEL",
++      "class"  : "Reserved",
++      "opcode" : 6165,
++      "operands" : [
++        { "kind" : "IdResultType" },
++        { "kind" : "IdResult" },
++        { "kind" : "IdRef",          "name" : "'Sequence'" }
++      ],
++      "capabilities" : [ "TaskSequenceINTEL" ],
++      "version" : "None"
++    },
++    {
++      "opname" : "OpTaskSequenceReleaseINTEL",
++      "class"  : "Reserved",
++      "opcode" : 6166,
++      "operands" : [
++        { "kind" : "IdRef",          "name" : "'Sequence'" }
++      ],
++      "capabilities" : [ "TaskSequenceINTEL" ],
++      "version" : "None"
++    },
++    {
++      "opname" : "OpTypeTaskSequenceINTEL",
++      "class"  : "Type-Declaration",
++      "opcode" : 6199,
++      "operands" : [
++        { "kind" : "IdResult" }
++      ],
++      "capabilities" : [ "TaskSequenceINTEL" ],
++      "version": "None"
++    },
+     {
+       "opname" : "OpSubgroupBlockPrefetchINTEL",
+       "class"  : "Group",
+@@ -17118,6 +17177,12 @@
+           "extensions" : [ "SPV_INTEL_kernel_attributes" ],
+           "version" : "None"
+         },
++        {
++          "enumerant" : "TaskSequenceINTEL",
++          "value" : 6162,
++          "extensions" : [ "SPV_INTEL_task_sequence" ],
++          "version" : "None"
++        },
+         {
+           "enumerant" : "FPMaxErrorINTEL",
+           "value" : 6169,
+diff --git a/include/spirv/unified1/spirv.cs b/include/spirv/unified1/spirv.cs
+index e491c7a..270a55d 100644
+--- a/include/spirv/unified1/spirv.cs
++++ b/include/spirv/unified1/spirv.cs
+@@ -1293,6 +1293,7 @@ namespace Spv
+             ArithmeticFenceEXT = 6144,
+             FPGAClusterAttributesV2INTEL = 6150,
+             FPGAKernelAttributesv2INTEL = 6161,
++            TaskSequenceINTEL = 6162,
+             FPMaxErrorINTEL = 6169,
+             FPGALatencyControlINTEL = 6171,
+             FPGAArgumentInterfacesINTEL = 6174,
+@@ -2416,6 +2417,11 @@ namespace Spv
+             OpControlBarrierArriveINTEL = 6142,
+             OpControlBarrierWaitINTEL = 6143,
+             OpArithmeticFenceEXT = 6145,
++            OpTaskSequenceCreateINTEL = 6163,
++            OpTaskSequenceAsyncINTEL = 6164,
++            OpTaskSequenceGetINTEL = 6165,
++            OpTaskSequenceReleaseINTEL = 6166,
++            OpTypeTaskSequenceINTEL = 6199,
+             OpSubgroupBlockPrefetchINTEL = 6221,
+             OpSubgroup2DBlockLoadINTEL = 6231,
+             OpSubgroup2DBlockLoadTransformINTEL = 6232,
+diff --git a/include/spirv/unified1/spirv.h b/include/spirv/unified1/spirv.h
+index 035441a..bc87ffa 100644
+--- a/include/spirv/unified1/spirv.h
++++ b/include/spirv/unified1/spirv.h
+@@ -1264,6 +1264,7 @@ typedef enum SpvCapability_ {
+     SpvCapabilityArithmeticFenceEXT = 6144,
+     SpvCapabilityFPGAClusterAttributesV2INTEL = 6150,
+     SpvCapabilityFPGAKernelAttributesv2INTEL = 6161,
++    SpvCapabilityTaskSequenceINTEL = 6162,
+     SpvCapabilityFPMaxErrorINTEL = 6169,
+     SpvCapabilityFPGALatencyControlINTEL = 6171,
+     SpvCapabilityFPGAArgumentInterfacesINTEL = 6174,
+@@ -2353,6 +2354,11 @@ typedef enum SpvOp_ {
+     SpvOpControlBarrierArriveINTEL = 6142,
+     SpvOpControlBarrierWaitINTEL = 6143,
+     SpvOpArithmeticFenceEXT = 6145,
++    SpvOpTaskSequenceCreateINTEL = 6163,
++    SpvOpTaskSequenceAsyncINTEL = 6164,
++    SpvOpTaskSequenceGetINTEL = 6165,
++    SpvOpTaskSequenceReleaseINTEL = 6166,
++    SpvOpTypeTaskSequenceINTEL = 6199,
+     SpvOpSubgroupBlockPrefetchINTEL = 6221,
+     SpvOpSubgroup2DBlockLoadINTEL = 6231,
+     SpvOpSubgroup2DBlockLoadTransformINTEL = 6232,
+@@ -3152,6 +3158,11 @@ inline void SpvHasResultAndType(SpvOp opcode, bool *hasResult, bool *hasResultTy
+     case SpvOpControlBarrierArriveINTEL: *hasResult = false; *hasResultType = false; break;
+     case SpvOpControlBarrierWaitINTEL: *hasResult = false; *hasResultType = false; break;
+     case SpvOpArithmeticFenceEXT: *hasResult = true; *hasResultType = true; break;
++    case SpvOpTaskSequenceCreateINTEL: *hasResult = true; *hasResultType = true; break;
++    case SpvOpTaskSequenceAsyncINTEL: *hasResult = false; *hasResultType = false; break;
++    case SpvOpTaskSequenceGetINTEL: *hasResult = true; *hasResultType = true; break;
++    case SpvOpTaskSequenceReleaseINTEL: *hasResult = false; *hasResultType = false; break;
++    case SpvOpTypeTaskSequenceINTEL: *hasResult = true; *hasResultType = false; break;
+     case SpvOpSubgroupBlockPrefetchINTEL: *hasResult = false; *hasResultType = false; break;
+     case SpvOpSubgroup2DBlockLoadINTEL: *hasResult = false; *hasResultType = false; break;
+     case SpvOpSubgroup2DBlockLoadTransformINTEL: *hasResult = false; *hasResultType = false; break;
+@@ -4101,6 +4112,7 @@ inline const char* SpvCapabilityToString(SpvCapability value) {
+     case SpvCapabilityArithmeticFenceEXT: return "ArithmeticFenceEXT";
+     case SpvCapabilityFPGAClusterAttributesV2INTEL: return "FPGAClusterAttributesV2INTEL";
+     case SpvCapabilityFPGAKernelAttributesv2INTEL: return "FPGAKernelAttributesv2INTEL";
++    case SpvCapabilityTaskSequenceINTEL: return "TaskSequenceINTEL";
+     case SpvCapabilityFPMaxErrorINTEL: return "FPMaxErrorINTEL";
+     case SpvCapabilityFPGALatencyControlINTEL: return "FPGALatencyControlINTEL";
+     case SpvCapabilityFPGAArgumentInterfacesINTEL: return "FPGAArgumentInterfacesINTEL";
+@@ -5078,6 +5090,11 @@ inline const char* SpvOpToString(SpvOp value) {
+     case SpvOpControlBarrierArriveINTEL: return "OpControlBarrierArriveINTEL";
+     case SpvOpControlBarrierWaitINTEL: return "OpControlBarrierWaitINTEL";
+     case SpvOpArithmeticFenceEXT: return "OpArithmeticFenceEXT";
++    case SpvOpTaskSequenceCreateINTEL: return "OpTaskSequenceCreateINTEL";
++    case SpvOpTaskSequenceAsyncINTEL: return "OpTaskSequenceAsyncINTEL";
++    case SpvOpTaskSequenceGetINTEL: return "OpTaskSequenceGetINTEL";
++    case SpvOpTaskSequenceReleaseINTEL: return "OpTaskSequenceReleaseINTEL";
++    case SpvOpTypeTaskSequenceINTEL: return "OpTypeTaskSequenceINTEL";
+     case SpvOpSubgroupBlockPrefetchINTEL: return "OpSubgroupBlockPrefetchINTEL";
+     case SpvOpSubgroup2DBlockLoadINTEL: return "OpSubgroup2DBlockLoadINTEL";
+     case SpvOpSubgroup2DBlockLoadTransformINTEL: return "OpSubgroup2DBlockLoadTransformINTEL";
+diff --git a/include/spirv/unified1/spirv.hpp b/include/spirv/unified1/spirv.hpp
+index a5c5264..94330df 100644
+--- a/include/spirv/unified1/spirv.hpp
++++ b/include/spirv/unified1/spirv.hpp
+@@ -1260,6 +1260,7 @@ enum Capability {
+     CapabilityArithmeticFenceEXT = 6144,
+     CapabilityFPGAClusterAttributesV2INTEL = 6150,
+     CapabilityFPGAKernelAttributesv2INTEL = 6161,
++    CapabilityTaskSequenceINTEL = 6162,
+     CapabilityFPMaxErrorINTEL = 6169,
+     CapabilityFPGALatencyControlINTEL = 6171,
+     CapabilityFPGAArgumentInterfacesINTEL = 6174,
+@@ -2349,6 +2350,11 @@ enum Op {
+     OpControlBarrierArriveINTEL = 6142,
+     OpControlBarrierWaitINTEL = 6143,
+     OpArithmeticFenceEXT = 6145,
++    OpTaskSequenceCreateINTEL = 6163,
++    OpTaskSequenceAsyncINTEL = 6164,
++    OpTaskSequenceGetINTEL = 6165,
++    OpTaskSequenceReleaseINTEL = 6166,
++    OpTypeTaskSequenceINTEL = 6199,
+     OpSubgroupBlockPrefetchINTEL = 6221,
+     OpSubgroup2DBlockLoadINTEL = 6231,
+     OpSubgroup2DBlockLoadTransformINTEL = 6232,
+@@ -3148,6 +3154,11 @@ inline void HasResultAndType(Op opcode, bool *hasResult, bool *hasResultType) {
+     case OpControlBarrierArriveINTEL: *hasResult = false; *hasResultType = false; break;
+     case OpControlBarrierWaitINTEL: *hasResult = false; *hasResultType = false; break;
+     case OpArithmeticFenceEXT: *hasResult = true; *hasResultType = true; break;
++    case OpTaskSequenceCreateINTEL: *hasResult = true; *hasResultType = true; break;
++    case OpTaskSequenceAsyncINTEL: *hasResult = false; *hasResultType = false; break;
++    case OpTaskSequenceGetINTEL: *hasResult = true; *hasResultType = true; break;
++    case OpTaskSequenceReleaseINTEL: *hasResult = false; *hasResultType = false; break;
++    case OpTypeTaskSequenceINTEL: *hasResult = true; *hasResultType = false; break;
+     case OpSubgroupBlockPrefetchINTEL: *hasResult = false; *hasResultType = false; break;
+     case OpSubgroup2DBlockLoadINTEL: *hasResult = false; *hasResultType = false; break;
+     case OpSubgroup2DBlockLoadTransformINTEL: *hasResult = false; *hasResultType = false; break;
+@@ -4097,6 +4108,7 @@ inline const char* CapabilityToString(Capability value) {
+     case CapabilityArithmeticFenceEXT: return "ArithmeticFenceEXT";
+     case CapabilityFPGAClusterAttributesV2INTEL: return "FPGAClusterAttributesV2INTEL";
+     case CapabilityFPGAKernelAttributesv2INTEL: return "FPGAKernelAttributesv2INTEL";
++    case CapabilityTaskSequenceINTEL: return "TaskSequenceINTEL";
+     case CapabilityFPMaxErrorINTEL: return "FPMaxErrorINTEL";
+     case CapabilityFPGALatencyControlINTEL: return "FPGALatencyControlINTEL";
+     case CapabilityFPGAArgumentInterfacesINTEL: return "FPGAArgumentInterfacesINTEL";
+@@ -5074,6 +5086,11 @@ inline const char* OpToString(Op value) {
+     case OpControlBarrierArriveINTEL: return "OpControlBarrierArriveINTEL";
+     case OpControlBarrierWaitINTEL: return "OpControlBarrierWaitINTEL";
+     case OpArithmeticFenceEXT: return "OpArithmeticFenceEXT";
++    case OpTaskSequenceCreateINTEL: return "OpTaskSequenceCreateINTEL";
++    case OpTaskSequenceAsyncINTEL: return "OpTaskSequenceAsyncINTEL";
++    case OpTaskSequenceGetINTEL: return "OpTaskSequenceGetINTEL";
++    case OpTaskSequenceReleaseINTEL: return "OpTaskSequenceReleaseINTEL";
++    case OpTypeTaskSequenceINTEL: return "OpTypeTaskSequenceINTEL";
+     case OpSubgroupBlockPrefetchINTEL: return "OpSubgroupBlockPrefetchINTEL";
+     case OpSubgroup2DBlockLoadINTEL: return "OpSubgroup2DBlockLoadINTEL";
+     case OpSubgroup2DBlockLoadTransformINTEL: return "OpSubgroup2DBlockLoadTransformINTEL";
+diff --git a/include/spirv/unified1/spirv.hpp11 b/include/spirv/unified1/spirv.hpp11
+index 135475a..739c522 100644
+--- a/include/spirv/unified1/spirv.hpp11
++++ b/include/spirv/unified1/spirv.hpp11
+@@ -1260,6 +1260,7 @@ enum class Capability : unsigned {
+     ArithmeticFenceEXT = 6144,
+     FPGAClusterAttributesV2INTEL = 6150,
+     FPGAKernelAttributesv2INTEL = 6161,
++    TaskSequenceINTEL = 6162,
+     FPMaxErrorINTEL = 6169,
+     FPGALatencyControlINTEL = 6171,
+     FPGAArgumentInterfacesINTEL = 6174,
+@@ -2349,6 +2350,11 @@ enum class Op : unsigned {
+     OpControlBarrierArriveINTEL = 6142,
+     OpControlBarrierWaitINTEL = 6143,
+     OpArithmeticFenceEXT = 6145,
++    OpTaskSequenceCreateINTEL = 6163,
++    OpTaskSequenceAsyncINTEL = 6164,
++    OpTaskSequenceGetINTEL = 6165,
++    OpTaskSequenceReleaseINTEL = 6166,
++    OpTypeTaskSequenceINTEL = 6199,
+     OpSubgroupBlockPrefetchINTEL = 6221,
+     OpSubgroup2DBlockLoadINTEL = 6231,
+     OpSubgroup2DBlockLoadTransformINTEL = 6232,
+@@ -3148,6 +3154,11 @@ inline void HasResultAndType(Op opcode, bool *hasResult, bool *hasResultType) {
+     case Op::OpControlBarrierArriveINTEL: *hasResult = false; *hasResultType = false; break;
+     case Op::OpControlBarrierWaitINTEL: *hasResult = false; *hasResultType = false; break;
+     case Op::OpArithmeticFenceEXT: *hasResult = true; *hasResultType = true; break;
++    case Op::OpTaskSequenceCreateINTEL: *hasResult = true; *hasResultType = true; break;
++    case Op::OpTaskSequenceAsyncINTEL: *hasResult = false; *hasResultType = false; break;
++    case Op::OpTaskSequenceGetINTEL: *hasResult = true; *hasResultType = true; break;
++    case Op::OpTaskSequenceReleaseINTEL: *hasResult = false; *hasResultType = false; break;
++    case Op::OpTypeTaskSequenceINTEL: *hasResult = true; *hasResultType = false; break;
+     case Op::OpSubgroupBlockPrefetchINTEL: *hasResult = false; *hasResultType = false; break;
+     case Op::OpSubgroup2DBlockLoadINTEL: *hasResult = false; *hasResultType = false; break;
+     case Op::OpSubgroup2DBlockLoadTransformINTEL: *hasResult = false; *hasResultType = false; break;
+@@ -4097,6 +4108,7 @@ inline const char* CapabilityToString(Capability value) {
+     case Capability::ArithmeticFenceEXT: return "ArithmeticFenceEXT";
+     case Capability::FPGAClusterAttributesV2INTEL: return "FPGAClusterAttributesV2INTEL";
+     case Capability::FPGAKernelAttributesv2INTEL: return "FPGAKernelAttributesv2INTEL";
++    case Capability::TaskSequenceINTEL: return "TaskSequenceINTEL";
+     case Capability::FPMaxErrorINTEL: return "FPMaxErrorINTEL";
+     case Capability::FPGALatencyControlINTEL: return "FPGALatencyControlINTEL";
+     case Capability::FPGAArgumentInterfacesINTEL: return "FPGAArgumentInterfacesINTEL";
+@@ -5074,6 +5086,11 @@ inline const char* OpToString(Op value) {
+     case Op::OpControlBarrierArriveINTEL: return "OpControlBarrierArriveINTEL";
+     case Op::OpControlBarrierWaitINTEL: return "OpControlBarrierWaitINTEL";
+     case Op::OpArithmeticFenceEXT: return "OpArithmeticFenceEXT";
++    case Op::OpTaskSequenceCreateINTEL: return "OpTaskSequenceCreateINTEL";
++    case Op::OpTaskSequenceAsyncINTEL: return "OpTaskSequenceAsyncINTEL";
++    case Op::OpTaskSequenceGetINTEL: return "OpTaskSequenceGetINTEL";
++    case Op::OpTaskSequenceReleaseINTEL: return "OpTaskSequenceReleaseINTEL";
++    case Op::OpTypeTaskSequenceINTEL: return "OpTypeTaskSequenceINTEL";
+     case Op::OpSubgroupBlockPrefetchINTEL: return "OpSubgroupBlockPrefetchINTEL";
+     case Op::OpSubgroup2DBlockLoadINTEL: return "OpSubgroup2DBlockLoadINTEL";
+     case Op::OpSubgroup2DBlockLoadTransformINTEL: return "OpSubgroup2DBlockLoadTransformINTEL";
+diff --git a/include/spirv/unified1/spirv.json b/include/spirv/unified1/spirv.json
+index c006a56..7983e8b 100644
+--- a/include/spirv/unified1/spirv.json
++++ b/include/spirv/unified1/spirv.json
+@@ -1236,6 +1236,7 @@
+                     "ArithmeticFenceEXT": 6144,
+                     "FPGAClusterAttributesV2INTEL": 6150,
+                     "FPGAKernelAttributesv2INTEL": 6161,
++                    "TaskSequenceINTEL": 6162,
+                     "FPMaxErrorINTEL": 6169,
+                     "FPGALatencyControlINTEL": 6171,
+                     "FPGAArgumentInterfacesINTEL": 6174,
+@@ -2336,6 +2337,11 @@
+                     "OpControlBarrierArriveINTEL": 6142,
+                     "OpControlBarrierWaitINTEL": 6143,
+                     "OpArithmeticFenceEXT": 6145,
++                    "OpTaskSequenceCreateINTEL": 6163,
++                    "OpTaskSequenceAsyncINTEL": 6164,
++                    "OpTaskSequenceGetINTEL": 6165,
++                    "OpTaskSequenceReleaseINTEL": 6166,
++                    "OpTypeTaskSequenceINTEL": 6199,
+                     "OpSubgroupBlockPrefetchINTEL": 6221,
+                     "OpSubgroup2DBlockLoadINTEL": 6231,
+                     "OpSubgroup2DBlockLoadTransformINTEL": 6232,
+diff --git a/include/spirv/unified1/spirv.lua b/include/spirv/unified1/spirv.lua
+index b974b53..bc2087b 100644
+--- a/include/spirv/unified1/spirv.lua
++++ b/include/spirv/unified1/spirv.lua
+@@ -1251,6 +1251,7 @@ spv = {
+         ArithmeticFenceEXT = 6144,
+         FPGAClusterAttributesV2INTEL = 6150,
+         FPGAKernelAttributesv2INTEL = 6161,
++        TaskSequenceINTEL = 6162,
+         FPMaxErrorINTEL = 6169,
+         FPGALatencyControlINTEL = 6171,
+         FPGAArgumentInterfacesINTEL = 6174,
+@@ -2340,6 +2341,11 @@ spv = {
+         OpControlBarrierArriveINTEL = 6142,
+         OpControlBarrierWaitINTEL = 6143,
+         OpArithmeticFenceEXT = 6145,
++        OpTaskSequenceCreateINTEL = 6163,
++        OpTaskSequenceAsyncINTEL = 6164,
++        OpTaskSequenceGetINTEL = 6165,
++        OpTaskSequenceReleaseINTEL = 6166,
++        OpTypeTaskSequenceINTEL = 6199,
+         OpSubgroupBlockPrefetchINTEL = 6221,
+         OpSubgroup2DBlockLoadINTEL = 6231,
+         OpSubgroup2DBlockLoadTransformINTEL = 6232,
+diff --git a/include/spirv/unified1/spirv.py b/include/spirv/unified1/spirv.py
+index 46594f4..8209977 100644
+--- a/include/spirv/unified1/spirv.py
++++ b/include/spirv/unified1/spirv.py
+@@ -1222,6 +1222,7 @@ spv = {
+         'ArithmeticFenceEXT' : 6144,
+         'FPGAClusterAttributesV2INTEL' : 6150,
+         'FPGAKernelAttributesv2INTEL' : 6161,
++        'TaskSequenceINTEL' : 6162,
+         'FPMaxErrorINTEL' : 6169,
+         'FPGALatencyControlINTEL' : 6171,
+         'FPGAArgumentInterfacesINTEL' : 6174,
+@@ -2284,6 +2285,11 @@ spv = {
+         'OpControlBarrierArriveINTEL' : 6142,
+         'OpControlBarrierWaitINTEL' : 6143,
+         'OpArithmeticFenceEXT' : 6145,
++        'OpTaskSequenceCreateINTEL' : 6163,
++        'OpTaskSequenceAsyncINTEL' : 6164,
++        'OpTaskSequenceGetINTEL' : 6165,
++        'OpTaskSequenceReleaseINTEL' : 6166,
++        'OpTypeTaskSequenceINTEL' : 6199,
+         'OpSubgroupBlockPrefetchINTEL' : 6221,
+         'OpSubgroup2DBlockLoadINTEL' : 6231,
+         'OpSubgroup2DBlockLoadTransformINTEL' : 6232,
+diff --git a/include/spirv/unified1/spv.d b/include/spirv/unified1/spv.d
+index fa4840e..45c79c8 100644
+--- a/include/spirv/unified1/spv.d
++++ b/include/spirv/unified1/spv.d
+@@ -1296,6 +1296,7 @@ enum Capability : uint
+     ArithmeticFenceEXT = 6144,
+     FPGAClusterAttributesV2INTEL = 6150,
+     FPGAKernelAttributesv2INTEL = 6161,
++    TaskSequenceINTEL = 6162,
+     FPMaxErrorINTEL = 6169,
+     FPGALatencyControlINTEL = 6171,
+     FPGAArgumentInterfacesINTEL = 6174,
+@@ -2419,6 +2420,11 @@ enum Op : uint
+     OpControlBarrierArriveINTEL = 6142,
+     OpControlBarrierWaitINTEL = 6143,
+     OpArithmeticFenceEXT = 6145,
++    OpTaskSequenceCreateINTEL = 6163,
++    OpTaskSequenceAsyncINTEL = 6164,
++    OpTaskSequenceGetINTEL = 6165,
++    OpTaskSequenceReleaseINTEL = 6166,
++    OpTypeTaskSequenceINTEL = 6199,
+     OpSubgroupBlockPrefetchINTEL = 6221,
+     OpSubgroup2DBlockLoadINTEL = 6231,
+     OpSubgroup2DBlockLoadTransformINTEL = 6232,
+-- 
+2.49.0
+

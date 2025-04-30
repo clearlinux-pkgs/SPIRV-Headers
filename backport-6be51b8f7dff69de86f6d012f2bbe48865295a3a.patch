@@ -1,0 +1,25 @@
+From 6be51b8f7dff69de86f6d012f2bbe48865295a3a Mon Sep 17 00:00:00 2001
+From: Ben Ashbaugh <ben.ashbaugh@intel.com>
+Date: Wed, 19 Feb 2025 09:20:56 -0800
+Subject: [PATCH] updates AtomicStorageOps to depend on the AtomicStorage
+ capability (#479)
+
+---
+ include/spirv/unified1/spirv.core.grammar.json | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/include/spirv/unified1/spirv.core.grammar.json b/include/spirv/unified1/spirv.core.grammar.json
+index f839eaf..8b2afb0 100644
+--- a/include/spirv/unified1/spirv.core.grammar.json
++++ b/include/spirv/unified1/spirv.core.grammar.json
+@@ -16112,6 +16112,7 @@
+         {
+           "enumerant" : "AtomicStorageOps",
+           "value" : 4445,
++          "capabilities" : [ "AtomicStorage" ],
+           "extensions" : [ "SPV_KHR_shader_atomic_counter_ops" ],
+           "version" : "None"
+         },
+-- 
+2.49.0
+

@@ -1,0 +1,62 @@
+From bf08186d8be01bf9aeb556eda6ebec2269a4bcae Mon Sep 17 00:00:00 2001
+From: Romaric Jodin <rjodin@google.com>
+Date: Wed, 12 Mar 2025 16:50:24 +0100
+Subject: [PATCH] ClspvReflection non-sematic: Add WorkgroupVariableSize (#493)
+
+This is needed to be able to report the local memory size required by
+a kernel.
+---
+ include/spirv/unified1/NonSemanticClspvReflection.h    |  3 ++-
+ .../extinst.nonsemantic.clspvreflection.grammar.json   | 10 +++++++++-
+ 2 files changed, 11 insertions(+), 2 deletions(-)
+
+diff --git a/include/spirv/unified1/NonSemanticClspvReflection.h b/include/spirv/unified1/NonSemanticClspvReflection.h
+index b6c27fa..ee7c158 100644
+--- a/include/spirv/unified1/NonSemanticClspvReflection.h
++++ b/include/spirv/unified1/NonSemanticClspvReflection.h
+@@ -33,7 +33,7 @@ extern "C" {
+ #endif
+ 
+ enum {
+-    NonSemanticClspvReflectionRevision = 6,
++    NonSemanticClspvReflectionRevision = 7,
+     NonSemanticClspvReflectionRevision_BitWidthPadding = 0x7fffffff
+ };
+ 
+@@ -79,6 +79,7 @@ enum NonSemanticClspvReflectionInstructions {
+     NonSemanticClspvReflectionPrintfBufferStorageBuffer = 39,
+     NonSemanticClspvReflectionPrintfBufferPointerPushConstant = 40,
+     NonSemanticClspvReflectionNormalizedSamplerMaskPushConstant = 41,
++    NonSemanticClspvReflectionWorkgroupVariableSize = 42,
+     NonSemanticClspvReflectionInstructionsMax = 0x7fffffff
+ };
+ 
+diff --git a/include/spirv/unified1/extinst.nonsemantic.clspvreflection.grammar.json b/include/spirv/unified1/extinst.nonsemantic.clspvreflection.grammar.json
+index cfccc80..bd8dfd1 100644
+--- a/include/spirv/unified1/extinst.nonsemantic.clspvreflection.grammar.json
++++ b/include/spirv/unified1/extinst.nonsemantic.clspvreflection.grammar.json
+@@ -1,5 +1,5 @@
+ {
+-  "revision" : 6,
++  "revision" : 7,
+   "instructions" : [
+     {
+       "opname" : "Kernel",
+@@ -405,6 +405,14 @@
+       { "kind" : "IdRef", "name" : "Offset" },
+       { "kind" : "IdRef", "name" : "Size" }
+       ]
++    },
++    {
++    "opname" : "WorkgroupVariableSize",
++    "opcode" : 42,
++    "operands" : [
++      { "kind" : "IdRef", "name" : "Variable" },
++      { "kind" : "IdRef", "name" : "Size" }
++      ]
+     }
+   ],
+   "operand_kinds" : [
+-- 
+2.49.0
+

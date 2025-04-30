@@ -1,0 +1,25 @@
+From ddd2c099be25e3fec7cdc14106c17aca99512082 Mon Sep 17 00:00:00 2001
+From: Yong He <yonghe@outlook.com>
+Date: Wed, 12 Mar 2025 05:51:42 -1000
+Subject: [PATCH] Update Slang tool entry. (#496)
+
+---
+ include/spirv/spir-v.xml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/spirv/spir-v.xml b/include/spirv/spir-v.xml
+index 0b0c47d..1eb9707 100644
+--- a/include/spirv/spir-v.xml
++++ b/include/spirv/spir-v.xml
+@@ -90,7 +90,7 @@
+         <id value="37"  vendor="heroseh" tool="Hero C Compiler" comment="https://github.com/heroseh/hcc"/>
+         <id value="38"  vendor="Meta" tool="SparkSL" comment="Contact Dunfan Lu, dunfanlu@meta.com, https://sparkar.facebook.com/ar-studio/learn/sparksl/sparksl-overview"/>
+         <id value="39"  vendor="SirLynix" tool="Nazara ShaderLang Compiler" comment="Contact Jérôme Leclercq, https://github.com/NazaraEngine/ShaderLang"/>
+-        <id value="40"  vendor="NVIDIA" tool="Slang Compiler" comment="Contact Theresa Foley, tfoley@nvidia.com, https://github.com/shader-slang/slang/"/>
++        <id value="40"  vendor="Khronos" tool="Slang Compiler" comment="https://shader-slang.org"/>
+         <id value="41"  vendor="Zig Software Foundation" tool="Zig Compiler" comment="Contact Robin Voetter, https://github.com/Snektron"/>
+         <id value="42"  vendor="Rendong Liang" tool="spq" comment="Contact Rendong Liang, admin@penguinliong.moe, https://github.com/PENGUINLIONG/spq-rs"/>
+         <id value="43"  vendor="LLVM" tool="LLVM SPIR-V Backend" comment="Contact Michal Paszkowski, michal.paszkowski@intel.com, https://github.com/llvm/llvm-project/tree/main/llvm/lib/Target/SPIRV"/>
+-- 
+2.49.0
+

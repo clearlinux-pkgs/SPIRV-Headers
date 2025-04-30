@@ -1,0 +1,26 @@
+From 0e710677989b4326ac974fd80c5308191ed80965 Mon Sep 17 00:00:00 2001
+From: Daniel Koch <dgkoch@users.noreply.github.com>
+Date: Wed, 19 Mar 2025 11:47:06 -0400
+Subject: [PATCH] Fix json capabilities for RayTracingOpacityMicromapEXT (#498)
+
+Fix Issue #319
+---
+ include/spirv/unified1/spirv.core.grammar.json | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/spirv/unified1/spirv.core.grammar.json b/include/spirv/unified1/spirv.core.grammar.json
+index e32fa05..f3b3cbc 100644
+--- a/include/spirv/unified1/spirv.core.grammar.json
++++ b/include/spirv/unified1/spirv.core.grammar.json
+@@ -16679,7 +16679,7 @@
+         {
+           "enumerant" : "RayTracingOpacityMicromapEXT",
+           "value" : 5381,
+-          "capabilities" : [ "RayQueryKHR","RayTracingKHR" ],
++          "capabilities" : [ "Shader" ],
+           "extensions" : [ "SPV_EXT_opacity_micromap" ],
+           "version" : "None"
+         },
+-- 
+2.49.0
+

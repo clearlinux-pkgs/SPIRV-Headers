@@ -1,0 +1,105 @@
+From 4793aeec29df99f2c5f2e0d22af7b1e4a362caf5 Mon Sep 17 00:00:00 2001
+From: Ben Ashbaugh <ben.ashbaugh@intel.com>
+Date: Wed, 12 Mar 2025 08:49:30 -0700
+Subject: [PATCH] remove extra arbitrary precision fixed point instructions
+ operands (#491)
+
+---
+ include/spirv/unified1/spirv.core.grammar.json | 11 -----------
+ 1 file changed, 11 deletions(-)
+
+diff --git a/include/spirv/unified1/spirv.core.grammar.json b/include/spirv/unified1/spirv.core.grammar.json
+index 8b2afb0..8fdd8fd 100644
+--- a/include/spirv/unified1/spirv.core.grammar.json
++++ b/include/spirv/unified1/spirv.core.grammar.json
+@@ -9759,7 +9759,6 @@
+       "operands" : [
+         { "kind" : "IdResultType" },
+         { "kind" : "IdResult" },
+-        { "kind" : "IdRef", "name" : "'Input Type'" },
+         { "kind" : "IdRef", "name" : "'Input'" },
+         { "kind" : "LiteralInteger", "name" : "'S'" },
+         { "kind" : "LiteralInteger", "name" : "'I'" },
+@@ -9777,7 +9776,6 @@
+       "operands" : [
+         { "kind" : "IdResultType" },
+         { "kind" : "IdResult" },
+-        { "kind" : "IdRef", "name" : "'Input Type'" },
+         { "kind" : "IdRef", "name" : "'Input'" },
+         { "kind" : "LiteralInteger", "name" : "'S'" },
+         { "kind" : "LiteralInteger", "name" : "'I'" },
+@@ -9795,7 +9793,6 @@
+       "operands" : [
+         { "kind" : "IdResultType" },
+         { "kind" : "IdResult" },
+-        { "kind" : "IdRef", "name" : "'Input Type'" },
+         { "kind" : "IdRef", "name" : "'Input'" },
+         { "kind" : "LiteralInteger", "name" : "'S'" },
+         { "kind" : "LiteralInteger", "name" : "'I'" },
+@@ -9813,7 +9810,6 @@
+       "operands" : [
+         { "kind" : "IdResultType" },
+         { "kind" : "IdResult" },
+-        { "kind" : "IdRef", "name" : "'Input Type'" },
+         { "kind" : "IdRef", "name" : "'Input'" },
+         { "kind" : "LiteralInteger", "name" : "'S'" },
+         { "kind" : "LiteralInteger", "name" : "'I'" },
+@@ -9831,7 +9827,6 @@
+       "operands" : [
+         { "kind" : "IdResultType" },
+         { "kind" : "IdResult" },
+-        { "kind" : "IdRef", "name" : "'Input Type'" },
+         { "kind" : "IdRef", "name" : "'Input'" },
+         { "kind" : "LiteralInteger", "name" : "'S'" },
+         { "kind" : "LiteralInteger", "name" : "'I'" },
+@@ -9849,7 +9844,6 @@
+       "operands" : [
+         { "kind" : "IdResultType" },
+         { "kind" : "IdResult" },
+-        { "kind" : "IdRef", "name" : "'Input Type'" },
+         { "kind" : "IdRef", "name" : "'Input'" },
+         { "kind" : "LiteralInteger", "name" : "'S'" },
+         { "kind" : "LiteralInteger", "name" : "'I'" },
+@@ -9867,7 +9861,6 @@
+       "operands" : [
+         { "kind" : "IdResultType" },
+         { "kind" : "IdResult" },
+-        { "kind" : "IdRef", "name" : "'Input Type'" },
+         { "kind" : "IdRef", "name" : "'Input'" },
+         { "kind" : "LiteralInteger", "name" : "'S'" },
+         { "kind" : "LiteralInteger", "name" : "'I'" },
+@@ -9885,7 +9878,6 @@
+       "operands" : [
+         { "kind" : "IdResultType" },
+         { "kind" : "IdResult" },
+-        { "kind" : "IdRef", "name" : "'Input Type'" },
+         { "kind" : "IdRef", "name" : "'Input'" },
+         { "kind" : "LiteralInteger", "name" : "'S'" },
+         { "kind" : "LiteralInteger", "name" : "'I'" },
+@@ -9903,7 +9895,6 @@
+       "operands" : [
+         { "kind" : "IdResultType" },
+         { "kind" : "IdResult" },
+-        { "kind" : "IdRef", "name" : "'Input Type'" },
+         { "kind" : "IdRef", "name" : "'Input'" },
+         { "kind" : "LiteralInteger", "name" : "'S'" },
+         { "kind" : "LiteralInteger", "name" : "'I'" },
+@@ -9921,7 +9912,6 @@
+       "operands" : [
+         { "kind" : "IdResultType" },
+         { "kind" : "IdResult" },
+-        { "kind" : "IdRef", "name" : "'Input Type'" },
+         { "kind" : "IdRef", "name" : "'Input'" },
+         { "kind" : "LiteralInteger", "name" : "'S'" },
+         { "kind" : "LiteralInteger", "name" : "'I'" },
+@@ -9939,7 +9929,6 @@
+       "operands" : [
+         { "kind" : "IdResultType" },
+         { "kind" : "IdResult" },
+-        { "kind" : "IdRef", "name" : "'Input Type'" },
+         { "kind" : "IdRef", "name" : "'Input'" },
+         { "kind" : "LiteralInteger", "name" : "'S'" },
+         { "kind" : "LiteralInteger", "name" : "'I'" },
+-- 
+2.49.0
+

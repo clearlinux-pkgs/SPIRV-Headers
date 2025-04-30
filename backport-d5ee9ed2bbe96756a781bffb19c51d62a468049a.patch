@@ -1,0 +1,317 @@
+From d5ee9ed2bbe96756a781bffb19c51d62a468049a Mon Sep 17 00:00:00 2001
+From: stu-s <19190608+stu-s@users.noreply.github.com>
+Date: Tue, 18 Mar 2025 19:13:14 +0000
+Subject: [PATCH] Add SPV_KHR_bfloat16 (#502)
+
+---
+ include/spirv/unified1/spirv.bf               |  4 +++
+ .../spirv/unified1/spirv.core.grammar.json    | 26 +++++++++++++++++++
+ include/spirv/unified1/spirv.cs               |  4 +++
+ include/spirv/unified1/spirv.h                |  8 ++++++
+ include/spirv/unified1/spirv.hpp              |  8 ++++++
+ include/spirv/unified1/spirv.hpp11            |  8 ++++++
+ include/spirv/unified1/spirv.json             |  4 +++
+ include/spirv/unified1/spirv.lua              |  4 +++
+ include/spirv/unified1/spirv.py               |  4 +++
+ include/spirv/unified1/spv.d                  |  4 +++
+ 10 files changed, 74 insertions(+)
+
+diff --git a/include/spirv/unified1/spirv.bf b/include/spirv/unified1/spirv.bf
+index d8a433e..76037ce 100644
+--- a/include/spirv/unified1/spirv.bf
++++ b/include/spirv/unified1/spirv.bf
+@@ -1143,6 +1143,9 @@ namespace Spv
+             ShaderClockKHR = 5055,
+             ShaderEnqueueAMDX = 5067,
+             QuadControlKHR = 5087,
++            BFloat16TypeKHR = 5116,
++            BFloat16DotProductKHR = 5117,
++            BFloat16CooperativeMatrixKHR = 5118,
+             SampleMaskOverrideCoverageNV = 5249,
+             GeometryShaderPassthroughNV = 5251,
+             ShaderViewportIndexLayerEXT = 5254,
+@@ -1597,6 +1600,7 @@ namespace Spv
+ 
+         [AllowDuplicates, CRepr] public enum FPEncoding
+         {
++            BFloat16KHR = 0,
+             Max = 0x7fffffff,
+         }
+ 
+diff --git a/include/spirv/unified1/spirv.core.grammar.json b/include/spirv/unified1/spirv.core.grammar.json
+index 8fdd8fd..8201b18 100644
+--- a/include/spirv/unified1/spirv.core.grammar.json
++++ b/include/spirv/unified1/spirv.core.grammar.json
+@@ -16281,6 +16281,26 @@
+           "extensions" : [ "SPV_KHR_quad_control" ],
+           "version" : "None"
+         },
++        {
++          "enumerant" : "BFloat16TypeKHR",
++          "value" : 5116,
++          "extensions" : [ "SPV_KHR_bfloat16" ],
++          "version" : "None"
++        },
++        {
++          "enumerant" : "BFloat16DotProductKHR",
++          "value" : 5117,
++          "capabilities" : [ "BFloat16TypeKHR" ],
++          "extensions" : [ "SPV_KHR_bfloat16" ],
++          "version" : "None"
++        },
++        {
++          "enumerant" : "BFloat16CooperativeMatrixKHR",
++          "value" : 5118,
++          "capabilities" : [ "BFloat16TypeKHR", "CooperativeMatrixKHR" ],
++          "extensions" : [ "SPV_KHR_bfloat16" ],
++          "version" : "None"
++        },
+         {
+           "enumerant" : "SampleMaskOverrideCoverageNV",
+           "value" : 5249,
+@@ -17592,6 +17612,12 @@
+       "category" : "ValueEnum",
+       "kind" : "FPEncoding",
+       "enumerants" : [
++        {
++          "enumerant" : "BFloat16KHR",
++          "value" : 0,
++          "capabilities" : [ "BFloat16TypeKHR" ],
++          "version" : "None"
++        }
+       ]
+     },
+     {
+diff --git a/include/spirv/unified1/spirv.cs b/include/spirv/unified1/spirv.cs
+index a9bd1e2..9f7cfaa 100644
+--- a/include/spirv/unified1/spirv.cs
++++ b/include/spirv/unified1/spirv.cs
+@@ -1142,6 +1142,9 @@ namespace Spv
+             ShaderClockKHR = 5055,
+             ShaderEnqueueAMDX = 5067,
+             QuadControlKHR = 5087,
++            BFloat16TypeKHR = 5116,
++            BFloat16DotProductKHR = 5117,
++            BFloat16CooperativeMatrixKHR = 5118,
+             SampleMaskOverrideCoverageNV = 5249,
+             GeometryShaderPassthroughNV = 5251,
+             ShaderViewportIndexLayerEXT = 5254,
+@@ -1596,6 +1599,7 @@ namespace Spv
+ 
+         public enum FPEncoding
+         {
++            BFloat16KHR = 0,
+             Max = 0x7fffffff,
+         }
+ 
+diff --git a/include/spirv/unified1/spirv.h b/include/spirv/unified1/spirv.h
+index a6a46c1..18f3eb0 100644
+--- a/include/spirv/unified1/spirv.h
++++ b/include/spirv/unified1/spirv.h
+@@ -1113,6 +1113,9 @@ typedef enum SpvCapability_ {
+     SpvCapabilityShaderClockKHR = 5055,
+     SpvCapabilityShaderEnqueueAMDX = 5067,
+     SpvCapabilityQuadControlKHR = 5087,
++    SpvCapabilityBFloat16TypeKHR = 5116,
++    SpvCapabilityBFloat16DotProductKHR = 5117,
++    SpvCapabilityBFloat16CooperativeMatrixKHR = 5118,
+     SpvCapabilitySampleMaskOverrideCoverageNV = 5249,
+     SpvCapabilityGeometryShaderPassthroughNV = 5251,
+     SpvCapabilityShaderViewportIndexLayerEXT = 5254,
+@@ -1536,6 +1539,7 @@ typedef enum SpvRawAccessChainOperandsMask_ {
+ } SpvRawAccessChainOperandsMask;
+ 
+ typedef enum SpvFPEncoding_ {
++    SpvFPEncodingBFloat16KHR = 0,
+     SpvFPEncodingMax = 0x7fffffff,
+ } SpvFPEncoding;
+ 
+@@ -3969,6 +3973,9 @@ inline const char* SpvCapabilityToString(SpvCapability value) {
+     case SpvCapabilityShaderClockKHR: return "ShaderClockKHR";
+     case SpvCapabilityShaderEnqueueAMDX: return "ShaderEnqueueAMDX";
+     case SpvCapabilityQuadControlKHR: return "QuadControlKHR";
++    case SpvCapabilityBFloat16TypeKHR: return "BFloat16TypeKHR";
++    case SpvCapabilityBFloat16DotProductKHR: return "BFloat16DotProductKHR";
++    case SpvCapabilityBFloat16CooperativeMatrixKHR: return "BFloat16CooperativeMatrixKHR";
+     case SpvCapabilitySampleMaskOverrideCoverageNV: return "SampleMaskOverrideCoverageNV";
+     case SpvCapabilityGeometryShaderPassthroughNV: return "GeometryShaderPassthroughNV";
+     case SpvCapabilityShaderViewportIndexLayerEXT: return "ShaderViewportIndexLayerEXT";
+@@ -4259,6 +4266,7 @@ inline const char* SpvNamedMaximumNumberOfRegistersToString(SpvNamedMaximumNumbe
+ 
+ inline const char* SpvFPEncodingToString(SpvFPEncoding value) {
+     switch (value) {
++    case SpvFPEncodingBFloat16KHR: return "BFloat16KHR";
+     default: return "Unknown";
+     }
+ }
+diff --git a/include/spirv/unified1/spirv.hpp b/include/spirv/unified1/spirv.hpp
+index b5dc2d5..99a0317 100644
+--- a/include/spirv/unified1/spirv.hpp
++++ b/include/spirv/unified1/spirv.hpp
+@@ -1109,6 +1109,9 @@ enum Capability {
+     CapabilityShaderClockKHR = 5055,
+     CapabilityShaderEnqueueAMDX = 5067,
+     CapabilityQuadControlKHR = 5087,
++    CapabilityBFloat16TypeKHR = 5116,
++    CapabilityBFloat16DotProductKHR = 5117,
++    CapabilityBFloat16CooperativeMatrixKHR = 5118,
+     CapabilitySampleMaskOverrideCoverageNV = 5249,
+     CapabilityGeometryShaderPassthroughNV = 5251,
+     CapabilityShaderViewportIndexLayerEXT = 5254,
+@@ -1532,6 +1535,7 @@ enum RawAccessChainOperandsMask {
+ };
+ 
+ enum FPEncoding {
++    FPEncodingBFloat16KHR = 0,
+     FPEncodingMax = 0x7fffffff,
+ };
+ 
+@@ -3965,6 +3969,9 @@ inline const char* CapabilityToString(Capability value) {
+     case CapabilityShaderClockKHR: return "ShaderClockKHR";
+     case CapabilityShaderEnqueueAMDX: return "ShaderEnqueueAMDX";
+     case CapabilityQuadControlKHR: return "QuadControlKHR";
++    case CapabilityBFloat16TypeKHR: return "BFloat16TypeKHR";
++    case CapabilityBFloat16DotProductKHR: return "BFloat16DotProductKHR";
++    case CapabilityBFloat16CooperativeMatrixKHR: return "BFloat16CooperativeMatrixKHR";
+     case CapabilitySampleMaskOverrideCoverageNV: return "SampleMaskOverrideCoverageNV";
+     case CapabilityGeometryShaderPassthroughNV: return "GeometryShaderPassthroughNV";
+     case CapabilityShaderViewportIndexLayerEXT: return "ShaderViewportIndexLayerEXT";
+@@ -4255,6 +4262,7 @@ inline const char* NamedMaximumNumberOfRegistersToString(NamedMaximumNumberOfReg
+ 
+ inline const char* FPEncodingToString(FPEncoding value) {
+     switch (value) {
++    case FPEncodingBFloat16KHR: return "BFloat16KHR";
+     default: return "Unknown";
+     }
+ }
+diff --git a/include/spirv/unified1/spirv.hpp11 b/include/spirv/unified1/spirv.hpp11
+index 7e99a5c..3b1a147 100644
+--- a/include/spirv/unified1/spirv.hpp11
++++ b/include/spirv/unified1/spirv.hpp11
+@@ -1109,6 +1109,9 @@ enum class Capability : unsigned {
+     ShaderClockKHR = 5055,
+     ShaderEnqueueAMDX = 5067,
+     QuadControlKHR = 5087,
++    BFloat16TypeKHR = 5116,
++    BFloat16DotProductKHR = 5117,
++    BFloat16CooperativeMatrixKHR = 5118,
+     SampleMaskOverrideCoverageNV = 5249,
+     GeometryShaderPassthroughNV = 5251,
+     ShaderViewportIndexLayerEXT = 5254,
+@@ -1532,6 +1535,7 @@ enum class RawAccessChainOperandsMask : unsigned {
+ };
+ 
+ enum class FPEncoding : unsigned {
++    BFloat16KHR = 0,
+     Max = 0x7fffffff,
+ };
+ 
+@@ -3965,6 +3969,9 @@ inline const char* CapabilityToString(Capability value) {
+     case Capability::ShaderClockKHR: return "ShaderClockKHR";
+     case Capability::ShaderEnqueueAMDX: return "ShaderEnqueueAMDX";
+     case Capability::QuadControlKHR: return "QuadControlKHR";
++    case Capability::BFloat16TypeKHR: return "BFloat16TypeKHR";
++    case Capability::BFloat16DotProductKHR: return "BFloat16DotProductKHR";
++    case Capability::BFloat16CooperativeMatrixKHR: return "BFloat16CooperativeMatrixKHR";
+     case Capability::SampleMaskOverrideCoverageNV: return "SampleMaskOverrideCoverageNV";
+     case Capability::GeometryShaderPassthroughNV: return "GeometryShaderPassthroughNV";
+     case Capability::ShaderViewportIndexLayerEXT: return "ShaderViewportIndexLayerEXT";
+@@ -4255,6 +4262,7 @@ inline const char* NamedMaximumNumberOfRegistersToString(NamedMaximumNumberOfReg
+ 
+ inline const char* FPEncodingToString(FPEncoding value) {
+     switch (value) {
++    case FPEncoding::BFloat16KHR: return "BFloat16KHR";
+     default: return "Unknown";
+     }
+ }
+diff --git a/include/spirv/unified1/spirv.json b/include/spirv/unified1/spirv.json
+index 6079764..87dfae1 100644
+--- a/include/spirv/unified1/spirv.json
++++ b/include/spirv/unified1/spirv.json
+@@ -1085,6 +1085,9 @@
+                     "ShaderClockKHR": 5055,
+                     "ShaderEnqueueAMDX": 5067,
+                     "QuadControlKHR": 5087,
++                    "BFloat16TypeKHR": 5116,
++                    "BFloat16DotProductKHR": 5117,
++                    "BFloat16CooperativeMatrixKHR": 5118,
+                     "SampleMaskOverrideCoverageNV": 5249,
+                     "GeometryShaderPassthroughNV": 5251,
+                     "ShaderViewportIndexLayerEXT": 5254,
+@@ -1510,6 +1513,7 @@
+                 "Type": "Value",
+                 "Values":
+                 {
++                    "BFloat16KHR": 0
+                 }
+             },
+             {
+diff --git a/include/spirv/unified1/spirv.lua b/include/spirv/unified1/spirv.lua
+index a0f4e8a..f517cdb 100644
+--- a/include/spirv/unified1/spirv.lua
++++ b/include/spirv/unified1/spirv.lua
+@@ -1100,6 +1100,9 @@ spv = {
+         ShaderClockKHR = 5055,
+         ShaderEnqueueAMDX = 5067,
+         QuadControlKHR = 5087,
++        BFloat16TypeKHR = 5116,
++        BFloat16DotProductKHR = 5117,
++        BFloat16CooperativeMatrixKHR = 5118,
+         SampleMaskOverrideCoverageNV = 5249,
+         GeometryShaderPassthroughNV = 5251,
+         ShaderViewportIndexLayerEXT = 5254,
+@@ -1523,6 +1526,7 @@ spv = {
+     },
+ 
+     FPEncoding = {
++        BFloat16KHR = 0,
+         Max = 0x7fffffff,
+     },
+ 
+diff --git a/include/spirv/unified1/spirv.py b/include/spirv/unified1/spirv.py
+index a41ddf5..343c3c4 100644
+--- a/include/spirv/unified1/spirv.py
++++ b/include/spirv/unified1/spirv.py
+@@ -1071,6 +1071,9 @@ spv = {
+         'ShaderClockKHR' : 5055,
+         'ShaderEnqueueAMDX' : 5067,
+         'QuadControlKHR' : 5087,
++        'BFloat16TypeKHR' : 5116,
++        'BFloat16DotProductKHR' : 5117,
++        'BFloat16CooperativeMatrixKHR' : 5118,
+         'SampleMaskOverrideCoverageNV' : 5249,
+         'GeometryShaderPassthroughNV' : 5251,
+         'ShaderViewportIndexLayerEXT' : 5254,
+@@ -1470,6 +1473,7 @@ spv = {
+     },
+ 
+     'FPEncoding' : {
++        'BFloat16KHR' : 0,
+     },
+ 
+     'CooperativeVectorMatrixLayout' : {
+diff --git a/include/spirv/unified1/spv.d b/include/spirv/unified1/spv.d
+index dd4033e..52edac9 100644
+--- a/include/spirv/unified1/spv.d
++++ b/include/spirv/unified1/spv.d
+@@ -1145,6 +1145,9 @@ enum Capability : uint
+     ShaderClockKHR = 5055,
+     ShaderEnqueueAMDX = 5067,
+     QuadControlKHR = 5087,
++    BFloat16TypeKHR = 5116,
++    BFloat16DotProductKHR = 5117,
++    BFloat16CooperativeMatrixKHR = 5118,
+     SampleMaskOverrideCoverageNV = 5249,
+     GeometryShaderPassthroughNV = 5251,
+     ShaderViewportIndexLayerEXT = 5254,
+@@ -1599,6 +1602,7 @@ enum RawAccessChainOperandsMask : uint
+ 
+ enum FPEncoding : uint
+ {
++    BFloat16KHR = 0,
+     Max = 0x7fffffff,
+ }
+ 
+-- 
+2.49.0
+
