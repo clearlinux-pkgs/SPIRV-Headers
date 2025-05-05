@@ -6,10 +6,10 @@
 # autospec commit: 9594167
 #
 Name     : SPIRV-Headers
-Version  : 1.4.309.0
-Release  : 16
-URL      : https://github.com/KhronosGroup/SPIRV-Headers/archive/vulkan-sdk-1.4.309.0/SPIRV-Headers-1.4.309.0.tar.gz
-Source0  : https://github.com/KhronosGroup/SPIRV-Headers/archive/vulkan-sdk-1.4.309.0/SPIRV-Headers-1.4.309.0.tar.gz
+Version  : 1.4.313.0
+Release  : 17
+URL      : https://github.com/KhronosGroup/SPIRV-Headers/archive/vulkan-sdk-1.4.313.0/SPIRV-Headers-1.4.313.0.tar.gz
+Source0  : https://github.com/KhronosGroup/SPIRV-Headers/archive/vulkan-sdk-1.4.313.0/SPIRV-Headers-1.4.313.0.tar.gz
 Summary  : Header files from the SPIR-V registry
 Group    : Development/Tools
 License  : MIT
@@ -20,16 +20,6 @@ BuildRequires : pkg-config
 # Suppress stripping binaries
 %define __strip /bin/true
 %define debug_package %{nil}
-Patch1: backport-6be51b8f7dff69de86f6d012f2bbe48865295a3a.patch
-Patch2: backport-54a521dd130ae1b2f38fef79b09515702d135bdd.patch
-Patch3: backport-4793aeec29df99f2c5f2e0d22af7b1e4a362caf5.patch
-Patch4: backport-bf08186d8be01bf9aeb556eda6ebec2269a4bcae.patch
-Patch5: backport-ddd2c099be25e3fec7cdc14106c17aca99512082.patch
-Patch6: backport-d5ee9ed2bbe96756a781bffb19c51d62a468049a.patch
-Patch7: backport-06633cfeec92ffedc954348d87b9f5acaa1ffcfb.patch
-Patch8: backport-0fcd749320f6d48f518e8ae0e13bb0aafe06ccd9.patch
-Patch9: backport-eceb46dad7e46b07de29216510e9f4c85811efb7.patch
-Patch10: backport-0e710677989b4326ac974fd80c5308191ed80965.patch
 
 %description
 # SPIR-V Headers
@@ -65,25 +55,15 @@ license components for the SPIRV-Headers package.
 
 
 %prep
-%setup -q -n SPIRV-Headers-vulkan-sdk-1.4.309.0
-cd %{_builddir}/SPIRV-Headers-vulkan-sdk-1.4.309.0
-%patch -P 1 -p1
-%patch -P 2 -p1
-%patch -P 3 -p1
-%patch -P 4 -p1
-%patch -P 5 -p1
-%patch -P 6 -p1
-%patch -P 7 -p1
-%patch -P 8 -p1
-%patch -P 9 -p1
-%patch -P 10 -p1
+%setup -q -n SPIRV-Headers-vulkan-sdk-1.4.313.0
+cd %{_builddir}/SPIRV-Headers-vulkan-sdk-1.4.313.0
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1746044975
+export SOURCE_DATE_EPOCH=1746482169
 mkdir -p clr-build
 pushd clr-build
 export GCC_IGNORE_WERROR=1
@@ -114,7 +94,7 @@ FFLAGS="$CLEAR_INTERMEDIATE_FFLAGS"
 FCFLAGS="$CLEAR_INTERMEDIATE_FCFLAGS"
 ASFLAGS="$CLEAR_INTERMEDIATE_ASFLAGS"
 LDFLAGS="$CLEAR_INTERMEDIATE_LDFLAGS"
-export SOURCE_DATE_EPOCH=1746044975
+export SOURCE_DATE_EPOCH=1746482169
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/SPIRV-Headers
 cp %{_builddir}/SPIRV-Headers-vulkan-sdk-%{version}/LICENSE %{buildroot}/usr/share/package-licenses/SPIRV-Headers/438253baaf6fa525f43a0afff2da8be3d7442b75 || :
