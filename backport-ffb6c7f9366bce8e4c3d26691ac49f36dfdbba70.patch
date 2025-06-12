@@ -1,0 +1,54 @@
+From ffb6c7f9366bce8e4c3d26691ac49f36dfdbba70 Mon Sep 17 00:00:00 2001
+From: Andre Brisco <andre.brisco@protonmail.com>
+Date: Sat, 19 Apr 2025 17:20:48 -0700
+Subject: [PATCH] Add Bazel bzlmod support
+
+---
+ .gitignore   | 2 ++
+ BUILD.bazel  | 3 ++-
+ MODULE.bazel | 8 ++++++++
+ 3 files changed, 12 insertions(+), 1 deletion(-)
+ create mode 100644 MODULE.bazel
+
+diff --git a/.gitignore b/.gitignore
+index f33592c..f2f2b8c 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -1,3 +1,5 @@
+ build
+ out
+ .DS_Store
++bazel-*
++MODULE.bazel.lock
+diff --git a/BUILD.bazel b/BUILD.bazel
+index 36e83fa..1323f48 100644
+--- a/BUILD.bazel
++++ b/BUILD.bazel
+@@ -1,3 +1,5 @@
++load("@rules_cc//cc:cc_library.bzl", "cc_library")
++
+ package(
+     default_visibility = ["//visibility:public"],
+ )
+@@ -175,4 +177,3 @@ cc_library(
+     includes = ["include"],
+     deps = [":spirv_common_headers"],
+ )
+-
+diff --git a/MODULE.bazel b/MODULE.bazel
+new file mode 100644
+index 0000000..ed7a2fb
+--- /dev/null
++++ b/MODULE.bazel
+@@ -0,0 +1,8 @@
++"""SPIRV-Headers"""
++
++module(
++    name = "spirv_headers",
++    version = "0.0.0",
++)
++
++bazel_dep(name = "rules_cc", version = "0.1.1")
+-- 
+2.49.0
+

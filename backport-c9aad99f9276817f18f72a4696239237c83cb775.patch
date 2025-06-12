@@ -1,0 +1,793 @@
+From c9aad99f9276817f18f72a4696239237c83cb775 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?K=C3=A9vin=20Petit?= <kevin.petit@arm.com>
+Date: Wed, 14 May 2025 17:51:27 +0900
+Subject: [PATCH] Add definitions for SPV_ARM_tensors (#513)
+
+Change-Id: I263056195a52f5104632d8da17008db990149380
+
+Signed-off-by: Kevin Petit <kevin.petit@arm.com>
+---
+ include/spirv/unified1/spirv.bf               |  27 ++++
+ .../spirv/unified1/spirv.core.grammar.json    | 126 ++++++++++++++++++
+ include/spirv/unified1/spirv.cs               |  27 ++++
+ include/spirv/unified1/spirv.h                |  36 +++++
+ include/spirv/unified1/spirv.hpp              |  40 ++++++
+ include/spirv/unified1/spirv.hpp11            |  40 ++++++
+ include/spirv/unified1/spirv.json             |  19 +++
+ include/spirv/unified1/spirv.lua              |  25 ++++
+ include/spirv/unified1/spirv.py               |  24 ++++
+ include/spirv/unified1/spv.d                  |  27 ++++
+ tools/buildHeaders/jsonToSpirv.cpp            |   5 +
+ tools/buildHeaders/jsonToSpirv.h              |   1 +
+ 12 files changed, 397 insertions(+)
+
+diff --git a/include/spirv/unified1/spirv.bf b/include/spirv/unified1/spirv.bf
+index 2694a27..bb9ba52 100644
+--- a/include/spirv/unified1/spirv.bf
++++ b/include/spirv/unified1/spirv.bf
+@@ -1109,6 +1109,9 @@ namespace Spv
+             TileImageColorReadAccessEXT = 4166,
+             TileImageDepthReadAccessEXT = 4167,
+             TileImageStencilReadAccessEXT = 4168,
++            TensorsARM = 4174,
++            StorageTensorArrayDynamicIndexingARM = 4175,
++            StorageTensorArrayNonUniformIndexingARM = 4176,
+             CooperativeMatrixLayoutsARM = 4201,
+             FragmentShadingRateKHR = 4422,
+             SubgroupBallotKHR = 4423,
+@@ -1523,6 +1526,26 @@ namespace Spv
+             DecodeFunc = 0x00000002,
+         }
+ 
++        [AllowDuplicates, CRepr] public enum TensorOperandsShift
++        {
++            NontemporalARM = 0,
++            OutOfBoundsValueARM = 1,
++            MakeElementAvailableARM = 2,
++            MakeElementVisibleARM = 3,
++            NonPrivateElementARM = 4,
++            Max = 0x7fffffff,
++        }
++
++        [AllowDuplicates, CRepr] public enum TensorOperandsMask
++        {
++            MaskNone = 0,
++            NontemporalARM = 0x00000001,
++            OutOfBoundsValueARM = 0x00000002,
++            MakeElementAvailableARM = 0x00000004,
++            MakeElementVisibleARM = 0x00000008,
++            NonPrivateElementARM = 0x00000010,
++        }
++
+         [AllowDuplicates, CRepr] public enum InitializationModeQualifier
+         {
+             InitOnDeviceReprogramINTEL = 0,
+@@ -2000,6 +2023,10 @@ namespace Spv
+             OpColorAttachmentReadEXT = 4160,
+             OpDepthAttachmentReadEXT = 4161,
+             OpStencilAttachmentReadEXT = 4162,
++            OpTypeTensorARM = 4163,
++            OpTensorReadARM = 4164,
++            OpTensorWriteARM = 4165,
++            OpTensorQuerySizeARM = 4166,
+             OpTerminateInvocation = 4416,
+             OpTypeUntypedPointerKHR = 4417,
+             OpUntypedVariableKHR = 4418,
+diff --git a/include/spirv/unified1/spirv.core.grammar.json b/include/spirv/unified1/spirv.core.grammar.json
+index e986f61..3a4744d 100644
+--- a/include/spirv/unified1/spirv.core.grammar.json
++++ b/include/spirv/unified1/spirv.core.grammar.json
+@@ -128,6 +128,10 @@
+       "tag"     : "Non-Uniform",
+       "heading" : "Non-Uniform Instructions"
+     },
++    {
++      "tag"     : "Tensor",
++      "heading" : "Tensor Instructions"
++    },
+     {
+       "tag"     : "Reserved",
+       "heading" : "Reserved Instructions"
+@@ -4433,6 +4437,59 @@
+       "capabilities" : [ "TileImageStencilReadAccessEXT" ],
+       "version" : "None"
+     },
++    {
++      "opname" : "OpTypeTensorARM",
++      "class"  : "Type-Declaration",
++      "opcode" : 4163,
++      "operands" : [
++        { "kind" : "IdResult" },
++        { "kind" : "IdRef",        "name" : "Element Type" },
++        { "kind" : "IdRef",        "name" : "Rank",  "quantifier" : "?" },
++        { "kind" : "IdRef",        "name" : "Shape", "quantifier" : "?" }
++      ],
++      "capabilities" : [ "TensorsARM" ],
++      "version" : "None"
++    },
++    {
++      "opname" : "OpTensorReadARM",
++      "class"  : "Tensor",
++      "opcode" : 4164,
++      "operands" : [
++        { "kind" : "IdResultType" },
++        { "kind" : "IdResult" },
++        { "kind" : "IdRef",        "name" : "Tensor" },
++        { "kind" : "IdRef",        "name" : "Coordinates" },
++        { "kind" : "TensorOperands", "quantifier" : "?" }
++      ],
++      "capabilities" : [ "TensorsARM" ],
++      "version" : "None"
++    },
++    {
++      "opname" : "OpTensorWriteARM",
++      "class"  : "Tensor",
++      "opcode" : 4165,
++      "operands" : [
++        { "kind" : "IdRef",        "name" : "Tensor" },
++        { "kind" : "IdRef",        "name" : "Coordinates" },
++        { "kind" : "IdRef",        "name" : "Object" },
++        { "kind" : "TensorOperands", "quantifier" : "?" }
++      ],
++      "capabilities" : [ "TensorsARM" ],
++      "version" : "None"
++    },
++    {
++      "opname" : "OpTensorQuerySizeARM",
++      "class"  : "Tensor",
++      "opcode" : 4166,
++      "operands" : [
++        { "kind" : "IdResultType" },
++        { "kind" : "IdResult" },
++        { "kind" : "IdRef",        "name" : "Tensor" },
++        { "kind" : "IdRef",        "name" : "Dimension" }
++      ],
++      "capabilities" : [ "TensorsARM" ],
++      "version" : "None"
++    },
+     {
+       "opname" : "OpTerminateInvocation",
+       "class"  : "Control-Flow",
+@@ -16148,6 +16205,24 @@
+           "extensions" : [ "SPV_EXT_shader_tile_image" ],
+           "version" : "None"
+         },
++        {
++          "enumerant" : "TensorsARM",
++          "value" : 4174,
++          "extensions" : [ "SPV_ARM_tensors"],
++          "version" : "None"
++        },
++        {
++          "enumerant" : "StorageTensorArrayDynamicIndexingARM",
++          "value" : 4175,
++          "extensions" : [ "SPV_ARM_tensors"],
++          "version" : "None"
++        },
++        {
++          "enumerant" : "StorageTensorArrayNonUniformIndexingARM",
++          "value" : 4176,
++          "extensions" : [ "SPV_ARM_tensors"],
++          "version" : "None"
++        },
+         {
+           "enumerant" : "CooperativeMatrixLayoutsARM",
+           "value" : 4201,
+@@ -17991,6 +18066,57 @@
+       "category" : "Composite",
+       "kind" : "PairIdRefIdRef",
+       "bases" : [ "IdRef", "IdRef" ]
++    },
++    {
++      "category" : "BitEnum",
++      "kind" : "TensorOperands",
++      "enumerants" : [
++        {
++          "enumerant" : "NoneARM",
++          "value" : "0x0000",
++          "capabilities" : [ "TensorsARM" ],
++          "version" : "None"
++        },
++        {
++          "enumerant" : "NontemporalARM",
++          "value" : "0x0001",
++          "capabilities" : [ "TensorsARM" ],
++          "version" : "None"
++        },
++        {
++          "enumerant" : "OutOfBoundsValueARM",
++          "value" : "0x0002",
++          "capabilities" : [ "TensorsARM" ],
++          "parameters" : [
++            { "kind" : "IdRef" }
++          ],
++          "version" : "None"
++        },
++        {
++          "enumerant" : "MakeElementAvailableARM",
++          "value" : "0x0004",
++          "capabilities" : [ "TensorsARM" ],
++          "parameters" : [
++            { "kind" : "IdRef" }
++          ],
++          "version" : "None"
++        },
++        {
++          "enumerant" : "MakeElementVisibleARM",
++          "value" : "0x0008",
++          "capabilities" : [ "TensorsARM" ],
++          "parameters" : [
++            { "kind" : "IdRef" }
++          ],
++          "version" : "None"
++        },
++        {
++          "enumerant" : "NonPrivateElementARM",
++          "value" : "0x0010",
++          "capabilities" : [ "TensorsARM" ],
++          "version" : "None"
++        }
++      ]
+     }
+   ]
+ }
+diff --git a/include/spirv/unified1/spirv.cs b/include/spirv/unified1/spirv.cs
+index 50943cb..065e923 100644
+--- a/include/spirv/unified1/spirv.cs
++++ b/include/spirv/unified1/spirv.cs
+@@ -1108,6 +1108,9 @@ namespace Spv
+             TileImageColorReadAccessEXT = 4166,
+             TileImageDepthReadAccessEXT = 4167,
+             TileImageStencilReadAccessEXT = 4168,
++            TensorsARM = 4174,
++            StorageTensorArrayDynamicIndexingARM = 4175,
++            StorageTensorArrayNonUniformIndexingARM = 4176,
+             CooperativeMatrixLayoutsARM = 4201,
+             FragmentShadingRateKHR = 4422,
+             SubgroupBallotKHR = 4423,
+@@ -1522,6 +1525,26 @@ namespace Spv
+             DecodeFunc = 0x00000002,
+         }
+ 
++        public enum TensorOperandsShift
++        {
++            NontemporalARM = 0,
++            OutOfBoundsValueARM = 1,
++            MakeElementAvailableARM = 2,
++            MakeElementVisibleARM = 3,
++            NonPrivateElementARM = 4,
++            Max = 0x7fffffff,
++        }
++
++        public enum TensorOperandsMask
++        {
++            MaskNone = 0,
++            NontemporalARM = 0x00000001,
++            OutOfBoundsValueARM = 0x00000002,
++            MakeElementAvailableARM = 0x00000004,
++            MakeElementVisibleARM = 0x00000008,
++            NonPrivateElementARM = 0x00000010,
++        }
++
+         public enum InitializationModeQualifier
+         {
+             InitOnDeviceReprogramINTEL = 0,
+@@ -1999,6 +2022,10 @@ namespace Spv
+             OpColorAttachmentReadEXT = 4160,
+             OpDepthAttachmentReadEXT = 4161,
+             OpStencilAttachmentReadEXT = 4162,
++            OpTypeTensorARM = 4163,
++            OpTensorReadARM = 4164,
++            OpTensorWriteARM = 4165,
++            OpTensorQuerySizeARM = 4166,
+             OpTerminateInvocation = 4416,
+             OpTypeUntypedPointerKHR = 4417,
+             OpUntypedVariableKHR = 4418,
+diff --git a/include/spirv/unified1/spirv.h b/include/spirv/unified1/spirv.h
+index 69451bd..96b804e 100644
+--- a/include/spirv/unified1/spirv.h
++++ b/include/spirv/unified1/spirv.h
+@@ -1079,6 +1079,9 @@ typedef enum SpvCapability_ {
+     SpvCapabilityTileImageColorReadAccessEXT = 4166,
+     SpvCapabilityTileImageDepthReadAccessEXT = 4167,
+     SpvCapabilityTileImageStencilReadAccessEXT = 4168,
++    SpvCapabilityTensorsARM = 4174,
++    SpvCapabilityStorageTensorArrayDynamicIndexingARM = 4175,
++    SpvCapabilityStorageTensorArrayNonUniformIndexingARM = 4176,
+     SpvCapabilityCooperativeMatrixLayoutsARM = 4201,
+     SpvCapabilityFragmentShadingRateKHR = 4422,
+     SpvCapabilitySubgroupBallotKHR = 4423,
+@@ -1472,6 +1475,24 @@ typedef enum SpvTensorAddressingOperandsMask_ {
+     SpvTensorAddressingOperandsDecodeFuncMask = 0x00000002,
+ } SpvTensorAddressingOperandsMask;
+ 
++typedef enum SpvTensorOperandsShift_ {
++    SpvTensorOperandsNontemporalARMShift = 0,
++    SpvTensorOperandsOutOfBoundsValueARMShift = 1,
++    SpvTensorOperandsMakeElementAvailableARMShift = 2,
++    SpvTensorOperandsMakeElementVisibleARMShift = 3,
++    SpvTensorOperandsNonPrivateElementARMShift = 4,
++    SpvTensorOperandsMax = 0x7fffffff,
++} SpvTensorOperandsShift;
++
++typedef enum SpvTensorOperandsMask_ {
++    SpvTensorOperandsMaskNone = 0,
++    SpvTensorOperandsNontemporalARMMask = 0x00000001,
++    SpvTensorOperandsOutOfBoundsValueARMMask = 0x00000002,
++    SpvTensorOperandsMakeElementAvailableARMMask = 0x00000004,
++    SpvTensorOperandsMakeElementVisibleARMMask = 0x00000008,
++    SpvTensorOperandsNonPrivateElementARMMask = 0x00000010,
++} SpvTensorOperandsMask;
++
+ typedef enum SpvInitializationModeQualifier_ {
+     SpvInitializationModeQualifierInitOnDeviceReprogramINTEL = 0,
+     SpvInitializationModeQualifierInitOnDeviceResetINTEL = 1,
+@@ -1936,6 +1957,10 @@ typedef enum SpvOp_ {
+     SpvOpColorAttachmentReadEXT = 4160,
+     SpvOpDepthAttachmentReadEXT = 4161,
+     SpvOpStencilAttachmentReadEXT = 4162,
++    SpvOpTypeTensorARM = 4163,
++    SpvOpTensorReadARM = 4164,
++    SpvOpTensorWriteARM = 4165,
++    SpvOpTensorQuerySizeARM = 4166,
+     SpvOpTerminateInvocation = 4416,
+     SpvOpTypeUntypedPointerKHR = 4417,
+     SpvOpUntypedVariableKHR = 4418,
+@@ -2752,6 +2777,10 @@ inline void SpvHasResultAndType(SpvOp opcode, bool *hasResult, bool *hasResultTy
+     case SpvOpColorAttachmentReadEXT: *hasResult = true; *hasResultType = true; break;
+     case SpvOpDepthAttachmentReadEXT: *hasResult = true; *hasResultType = true; break;
+     case SpvOpStencilAttachmentReadEXT: *hasResult = true; *hasResultType = true; break;
++    case SpvOpTypeTensorARM: *hasResult = true; *hasResultType = false; break;
++    case SpvOpTensorReadARM: *hasResult = true; *hasResultType = true; break;
++    case SpvOpTensorWriteARM: *hasResult = false; *hasResultType = false; break;
++    case SpvOpTensorQuerySizeARM: *hasResult = true; *hasResultType = true; break;
+     case SpvOpTerminateInvocation: *hasResult = false; *hasResultType = false; break;
+     case SpvOpTypeUntypedPointerKHR: *hasResult = true; *hasResultType = false; break;
+     case SpvOpUntypedVariableKHR: *hasResult = true; *hasResultType = true; break;
+@@ -3973,6 +4002,9 @@ inline const char* SpvCapabilityToString(SpvCapability value) {
+     case SpvCapabilityTileImageColorReadAccessEXT: return "TileImageColorReadAccessEXT";
+     case SpvCapabilityTileImageDepthReadAccessEXT: return "TileImageDepthReadAccessEXT";
+     case SpvCapabilityTileImageStencilReadAccessEXT: return "TileImageStencilReadAccessEXT";
++    case SpvCapabilityTensorsARM: return "TensorsARM";
++    case SpvCapabilityStorageTensorArrayDynamicIndexingARM: return "StorageTensorArrayDynamicIndexingARM";
++    case SpvCapabilityStorageTensorArrayNonUniformIndexingARM: return "StorageTensorArrayNonUniformIndexingARM";
+     case SpvCapabilityCooperativeMatrixLayoutsARM: return "CooperativeMatrixLayoutsARM";
+     case SpvCapabilityFragmentShadingRateKHR: return "FragmentShadingRateKHR";
+     case SpvCapabilitySubgroupBallotKHR: return "SubgroupBallotKHR";
+@@ -4701,6 +4733,10 @@ inline const char* SpvOpToString(SpvOp value) {
+     case SpvOpColorAttachmentReadEXT: return "OpColorAttachmentReadEXT";
+     case SpvOpDepthAttachmentReadEXT: return "OpDepthAttachmentReadEXT";
+     case SpvOpStencilAttachmentReadEXT: return "OpStencilAttachmentReadEXT";
++    case SpvOpTypeTensorARM: return "OpTypeTensorARM";
++    case SpvOpTensorReadARM: return "OpTensorReadARM";
++    case SpvOpTensorWriteARM: return "OpTensorWriteARM";
++    case SpvOpTensorQuerySizeARM: return "OpTensorQuerySizeARM";
+     case SpvOpTerminateInvocation: return "OpTerminateInvocation";
+     case SpvOpTypeUntypedPointerKHR: return "OpTypeUntypedPointerKHR";
+     case SpvOpUntypedVariableKHR: return "OpUntypedVariableKHR";
+diff --git a/include/spirv/unified1/spirv.hpp b/include/spirv/unified1/spirv.hpp
+index 7b4f205..8b0f90b 100644
+--- a/include/spirv/unified1/spirv.hpp
++++ b/include/spirv/unified1/spirv.hpp
+@@ -1075,6 +1075,9 @@ enum Capability {
+     CapabilityTileImageColorReadAccessEXT = 4166,
+     CapabilityTileImageDepthReadAccessEXT = 4167,
+     CapabilityTileImageStencilReadAccessEXT = 4168,
++    CapabilityTensorsARM = 4174,
++    CapabilityStorageTensorArrayDynamicIndexingARM = 4175,
++    CapabilityStorageTensorArrayNonUniformIndexingARM = 4176,
+     CapabilityCooperativeMatrixLayoutsARM = 4201,
+     CapabilityFragmentShadingRateKHR = 4422,
+     CapabilitySubgroupBallotKHR = 4423,
+@@ -1468,6 +1471,24 @@ enum TensorAddressingOperandsMask {
+     TensorAddressingOperandsDecodeFuncMask = 0x00000002,
+ };
+ 
++enum TensorOperandsShift {
++    TensorOperandsNontemporalARMShift = 0,
++    TensorOperandsOutOfBoundsValueARMShift = 1,
++    TensorOperandsMakeElementAvailableARMShift = 2,
++    TensorOperandsMakeElementVisibleARMShift = 3,
++    TensorOperandsNonPrivateElementARMShift = 4,
++    TensorOperandsMax = 0x7fffffff,
++};
++
++enum TensorOperandsMask {
++    TensorOperandsMaskNone = 0,
++    TensorOperandsNontemporalARMMask = 0x00000001,
++    TensorOperandsOutOfBoundsValueARMMask = 0x00000002,
++    TensorOperandsMakeElementAvailableARMMask = 0x00000004,
++    TensorOperandsMakeElementVisibleARMMask = 0x00000008,
++    TensorOperandsNonPrivateElementARMMask = 0x00000010,
++};
++
+ enum InitializationModeQualifier {
+     InitializationModeQualifierInitOnDeviceReprogramINTEL = 0,
+     InitializationModeQualifierInitOnDeviceResetINTEL = 1,
+@@ -1932,6 +1953,10 @@ enum Op {
+     OpColorAttachmentReadEXT = 4160,
+     OpDepthAttachmentReadEXT = 4161,
+     OpStencilAttachmentReadEXT = 4162,
++    OpTypeTensorARM = 4163,
++    OpTensorReadARM = 4164,
++    OpTensorWriteARM = 4165,
++    OpTensorQuerySizeARM = 4166,
+     OpTerminateInvocation = 4416,
+     OpTypeUntypedPointerKHR = 4417,
+     OpUntypedVariableKHR = 4418,
+@@ -2748,6 +2773,10 @@ inline void HasResultAndType(Op opcode, bool *hasResult, bool *hasResultType) {
+     case OpColorAttachmentReadEXT: *hasResult = true; *hasResultType = true; break;
+     case OpDepthAttachmentReadEXT: *hasResult = true; *hasResultType = true; break;
+     case OpStencilAttachmentReadEXT: *hasResult = true; *hasResultType = true; break;
++    case OpTypeTensorARM: *hasResult = true; *hasResultType = false; break;
++    case OpTensorReadARM: *hasResult = true; *hasResultType = true; break;
++    case OpTensorWriteARM: *hasResult = false; *hasResultType = false; break;
++    case OpTensorQuerySizeARM: *hasResult = true; *hasResultType = true; break;
+     case OpTerminateInvocation: *hasResult = false; *hasResultType = false; break;
+     case OpTypeUntypedPointerKHR: *hasResult = true; *hasResultType = false; break;
+     case OpUntypedVariableKHR: *hasResult = true; *hasResultType = true; break;
+@@ -3969,6 +3998,9 @@ inline const char* CapabilityToString(Capability value) {
+     case CapabilityTileImageColorReadAccessEXT: return "TileImageColorReadAccessEXT";
+     case CapabilityTileImageDepthReadAccessEXT: return "TileImageDepthReadAccessEXT";
+     case CapabilityTileImageStencilReadAccessEXT: return "TileImageStencilReadAccessEXT";
++    case CapabilityTensorsARM: return "TensorsARM";
++    case CapabilityStorageTensorArrayDynamicIndexingARM: return "StorageTensorArrayDynamicIndexingARM";
++    case CapabilityStorageTensorArrayNonUniformIndexingARM: return "StorageTensorArrayNonUniformIndexingARM";
+     case CapabilityCooperativeMatrixLayoutsARM: return "CooperativeMatrixLayoutsARM";
+     case CapabilityFragmentShadingRateKHR: return "FragmentShadingRateKHR";
+     case CapabilitySubgroupBallotKHR: return "SubgroupBallotKHR";
+@@ -4697,6 +4729,10 @@ inline const char* OpToString(Op value) {
+     case OpColorAttachmentReadEXT: return "OpColorAttachmentReadEXT";
+     case OpDepthAttachmentReadEXT: return "OpDepthAttachmentReadEXT";
+     case OpStencilAttachmentReadEXT: return "OpStencilAttachmentReadEXT";
++    case OpTypeTensorARM: return "OpTypeTensorARM";
++    case OpTensorReadARM: return "OpTensorReadARM";
++    case OpTensorWriteARM: return "OpTensorWriteARM";
++    case OpTensorQuerySizeARM: return "OpTensorQuerySizeARM";
+     case OpTerminateInvocation: return "OpTerminateInvocation";
+     case OpTypeUntypedPointerKHR: return "OpTypeUntypedPointerKHR";
+     case OpUntypedVariableKHR: return "OpUntypedVariableKHR";
+@@ -5204,6 +5240,10 @@ inline TensorAddressingOperandsMask operator|(TensorAddressingOperandsMask a, Te
+ inline TensorAddressingOperandsMask operator&(TensorAddressingOperandsMask a, TensorAddressingOperandsMask b) { return TensorAddressingOperandsMask(unsigned(a) & unsigned(b)); }
+ inline TensorAddressingOperandsMask operator^(TensorAddressingOperandsMask a, TensorAddressingOperandsMask b) { return TensorAddressingOperandsMask(unsigned(a) ^ unsigned(b)); }
+ inline TensorAddressingOperandsMask operator~(TensorAddressingOperandsMask a) { return TensorAddressingOperandsMask(~unsigned(a)); }
++inline TensorOperandsMask operator|(TensorOperandsMask a, TensorOperandsMask b) { return TensorOperandsMask(unsigned(a) | unsigned(b)); }
++inline TensorOperandsMask operator&(TensorOperandsMask a, TensorOperandsMask b) { return TensorOperandsMask(unsigned(a) & unsigned(b)); }
++inline TensorOperandsMask operator^(TensorOperandsMask a, TensorOperandsMask b) { return TensorOperandsMask(unsigned(a) ^ unsigned(b)); }
++inline TensorOperandsMask operator~(TensorOperandsMask a) { return TensorOperandsMask(~unsigned(a)); }
+ inline MatrixMultiplyAccumulateOperandsMask operator|(MatrixMultiplyAccumulateOperandsMask a, MatrixMultiplyAccumulateOperandsMask b) { return MatrixMultiplyAccumulateOperandsMask(unsigned(a) | unsigned(b)); }
+ inline MatrixMultiplyAccumulateOperandsMask operator&(MatrixMultiplyAccumulateOperandsMask a, MatrixMultiplyAccumulateOperandsMask b) { return MatrixMultiplyAccumulateOperandsMask(unsigned(a) & unsigned(b)); }
+ inline MatrixMultiplyAccumulateOperandsMask operator^(MatrixMultiplyAccumulateOperandsMask a, MatrixMultiplyAccumulateOperandsMask b) { return MatrixMultiplyAccumulateOperandsMask(unsigned(a) ^ unsigned(b)); }
+diff --git a/include/spirv/unified1/spirv.hpp11 b/include/spirv/unified1/spirv.hpp11
+index c10d2e4..87ead51 100644
+--- a/include/spirv/unified1/spirv.hpp11
++++ b/include/spirv/unified1/spirv.hpp11
+@@ -1075,6 +1075,9 @@ enum class Capability : unsigned {
+     TileImageColorReadAccessEXT = 4166,
+     TileImageDepthReadAccessEXT = 4167,
+     TileImageStencilReadAccessEXT = 4168,
++    TensorsARM = 4174,
++    StorageTensorArrayDynamicIndexingARM = 4175,
++    StorageTensorArrayNonUniformIndexingARM = 4176,
+     CooperativeMatrixLayoutsARM = 4201,
+     FragmentShadingRateKHR = 4422,
+     SubgroupBallotKHR = 4423,
+@@ -1468,6 +1471,24 @@ enum class TensorAddressingOperandsMask : unsigned {
+     DecodeFunc = 0x00000002,
+ };
+ 
++enum class TensorOperandsShift : unsigned {
++    NontemporalARM = 0,
++    OutOfBoundsValueARM = 1,
++    MakeElementAvailableARM = 2,
++    MakeElementVisibleARM = 3,
++    NonPrivateElementARM = 4,
++    Max = 0x7fffffff,
++};
++
++enum class TensorOperandsMask : unsigned {
++    MaskNone = 0,
++    NontemporalARM = 0x00000001,
++    OutOfBoundsValueARM = 0x00000002,
++    MakeElementAvailableARM = 0x00000004,
++    MakeElementVisibleARM = 0x00000008,
++    NonPrivateElementARM = 0x00000010,
++};
++
+ enum class InitializationModeQualifier : unsigned {
+     InitOnDeviceReprogramINTEL = 0,
+     InitOnDeviceResetINTEL = 1,
+@@ -1932,6 +1953,10 @@ enum class Op : unsigned {
+     OpColorAttachmentReadEXT = 4160,
+     OpDepthAttachmentReadEXT = 4161,
+     OpStencilAttachmentReadEXT = 4162,
++    OpTypeTensorARM = 4163,
++    OpTensorReadARM = 4164,
++    OpTensorWriteARM = 4165,
++    OpTensorQuerySizeARM = 4166,
+     OpTerminateInvocation = 4416,
+     OpTypeUntypedPointerKHR = 4417,
+     OpUntypedVariableKHR = 4418,
+@@ -2748,6 +2773,10 @@ inline void HasResultAndType(Op opcode, bool *hasResult, bool *hasResultType) {
+     case Op::OpColorAttachmentReadEXT: *hasResult = true; *hasResultType = true; break;
+     case Op::OpDepthAttachmentReadEXT: *hasResult = true; *hasResultType = true; break;
+     case Op::OpStencilAttachmentReadEXT: *hasResult = true; *hasResultType = true; break;
++    case Op::OpTypeTensorARM: *hasResult = true; *hasResultType = false; break;
++    case Op::OpTensorReadARM: *hasResult = true; *hasResultType = true; break;
++    case Op::OpTensorWriteARM: *hasResult = false; *hasResultType = false; break;
++    case Op::OpTensorQuerySizeARM: *hasResult = true; *hasResultType = true; break;
+     case Op::OpTerminateInvocation: *hasResult = false; *hasResultType = false; break;
+     case Op::OpTypeUntypedPointerKHR: *hasResult = true; *hasResultType = false; break;
+     case Op::OpUntypedVariableKHR: *hasResult = true; *hasResultType = true; break;
+@@ -3969,6 +3998,9 @@ inline const char* CapabilityToString(Capability value) {
+     case Capability::TileImageColorReadAccessEXT: return "TileImageColorReadAccessEXT";
+     case Capability::TileImageDepthReadAccessEXT: return "TileImageDepthReadAccessEXT";
+     case Capability::TileImageStencilReadAccessEXT: return "TileImageStencilReadAccessEXT";
++    case Capability::TensorsARM: return "TensorsARM";
++    case Capability::StorageTensorArrayDynamicIndexingARM: return "StorageTensorArrayDynamicIndexingARM";
++    case Capability::StorageTensorArrayNonUniformIndexingARM: return "StorageTensorArrayNonUniformIndexingARM";
+     case Capability::CooperativeMatrixLayoutsARM: return "CooperativeMatrixLayoutsARM";
+     case Capability::FragmentShadingRateKHR: return "FragmentShadingRateKHR";
+     case Capability::SubgroupBallotKHR: return "SubgroupBallotKHR";
+@@ -4697,6 +4729,10 @@ inline const char* OpToString(Op value) {
+     case Op::OpColorAttachmentReadEXT: return "OpColorAttachmentReadEXT";
+     case Op::OpDepthAttachmentReadEXT: return "OpDepthAttachmentReadEXT";
+     case Op::OpStencilAttachmentReadEXT: return "OpStencilAttachmentReadEXT";
++    case Op::OpTypeTensorARM: return "OpTypeTensorARM";
++    case Op::OpTensorReadARM: return "OpTensorReadARM";
++    case Op::OpTensorWriteARM: return "OpTensorWriteARM";
++    case Op::OpTensorQuerySizeARM: return "OpTensorQuerySizeARM";
+     case Op::OpTerminateInvocation: return "OpTerminateInvocation";
+     case Op::OpTypeUntypedPointerKHR: return "OpTypeUntypedPointerKHR";
+     case Op::OpUntypedVariableKHR: return "OpUntypedVariableKHR";
+@@ -5204,6 +5240,10 @@ constexpr TensorAddressingOperandsMask operator|(TensorAddressingOperandsMask a,
+ constexpr TensorAddressingOperandsMask operator&(TensorAddressingOperandsMask a, TensorAddressingOperandsMask b) { return TensorAddressingOperandsMask(unsigned(a) & unsigned(b)); }
+ constexpr TensorAddressingOperandsMask operator^(TensorAddressingOperandsMask a, TensorAddressingOperandsMask b) { return TensorAddressingOperandsMask(unsigned(a) ^ unsigned(b)); }
+ constexpr TensorAddressingOperandsMask operator~(TensorAddressingOperandsMask a) { return TensorAddressingOperandsMask(~unsigned(a)); }
++constexpr TensorOperandsMask operator|(TensorOperandsMask a, TensorOperandsMask b) { return TensorOperandsMask(unsigned(a) | unsigned(b)); }
++constexpr TensorOperandsMask operator&(TensorOperandsMask a, TensorOperandsMask b) { return TensorOperandsMask(unsigned(a) & unsigned(b)); }
++constexpr TensorOperandsMask operator^(TensorOperandsMask a, TensorOperandsMask b) { return TensorOperandsMask(unsigned(a) ^ unsigned(b)); }
++constexpr TensorOperandsMask operator~(TensorOperandsMask a) { return TensorOperandsMask(~unsigned(a)); }
+ constexpr MatrixMultiplyAccumulateOperandsMask operator|(MatrixMultiplyAccumulateOperandsMask a, MatrixMultiplyAccumulateOperandsMask b) { return MatrixMultiplyAccumulateOperandsMask(unsigned(a) | unsigned(b)); }
+ constexpr MatrixMultiplyAccumulateOperandsMask operator&(MatrixMultiplyAccumulateOperandsMask a, MatrixMultiplyAccumulateOperandsMask b) { return MatrixMultiplyAccumulateOperandsMask(unsigned(a) & unsigned(b)); }
+ constexpr MatrixMultiplyAccumulateOperandsMask operator^(MatrixMultiplyAccumulateOperandsMask a, MatrixMultiplyAccumulateOperandsMask b) { return MatrixMultiplyAccumulateOperandsMask(unsigned(a) ^ unsigned(b)); }
+diff --git a/include/spirv/unified1/spirv.json b/include/spirv/unified1/spirv.json
+index 448796e..6e0cc4a 100644
+--- a/include/spirv/unified1/spirv.json
++++ b/include/spirv/unified1/spirv.json
+@@ -1051,6 +1051,9 @@
+                     "TileImageColorReadAccessEXT": 4166,
+                     "TileImageDepthReadAccessEXT": 4167,
+                     "TileImageStencilReadAccessEXT": 4168,
++                    "TensorsARM": 4174,
++                    "StorageTensorArrayDynamicIndexingARM": 4175,
++                    "StorageTensorArrayNonUniformIndexingARM": 4176,
+                     "CooperativeMatrixLayoutsARM": 4201,
+                     "FragmentShadingRateKHR": 4422,
+                     "SubgroupBallotKHR": 4423,
+@@ -1445,6 +1448,18 @@
+                     "DecodeFunc": 1
+                 }
+             },
++            {
++                "Name": "TensorOperands",
++                "Type": "Bit",
++                "Values":
++                {
++                    "NontemporalARM": 0,
++                    "OutOfBoundsValueARM": 1,
++                    "MakeElementAvailableARM": 2,
++                    "MakeElementVisibleARM": 3,
++                    "NonPrivateElementARM": 4
++                }
++            },
+             {
+                 "Name": "InitializationModeQualifier",
+                 "Type": "Value",
+@@ -1919,6 +1934,10 @@
+                     "OpColorAttachmentReadEXT": 4160,
+                     "OpDepthAttachmentReadEXT": 4161,
+                     "OpStencilAttachmentReadEXT": 4162,
++                    "OpTypeTensorARM": 4163,
++                    "OpTensorReadARM": 4164,
++                    "OpTensorWriteARM": 4165,
++                    "OpTensorQuerySizeARM": 4166,
+                     "OpTerminateInvocation": 4416,
+                     "OpTypeUntypedPointerKHR": 4417,
+                     "OpUntypedVariableKHR": 4418,
+diff --git a/include/spirv/unified1/spirv.lua b/include/spirv/unified1/spirv.lua
+index c20402d..09f0982 100644
+--- a/include/spirv/unified1/spirv.lua
++++ b/include/spirv/unified1/spirv.lua
+@@ -1066,6 +1066,9 @@ spv = {
+         TileImageColorReadAccessEXT = 4166,
+         TileImageDepthReadAccessEXT = 4167,
+         TileImageStencilReadAccessEXT = 4168,
++        TensorsARM = 4174,
++        StorageTensorArrayDynamicIndexingARM = 4175,
++        StorageTensorArrayNonUniformIndexingARM = 4176,
+         CooperativeMatrixLayoutsARM = 4201,
+         FragmentShadingRateKHR = 4422,
+         SubgroupBallotKHR = 4423,
+@@ -1459,6 +1462,24 @@ spv = {
+         DecodeFunc = 0x00000002,
+     },
+ 
++    TensorOperandsShift = {
++        NontemporalARM = 0,
++        OutOfBoundsValueARM = 1,
++        MakeElementAvailableARM = 2,
++        MakeElementVisibleARM = 3,
++        NonPrivateElementARM = 4,
++        Max = 0x7fffffff,
++    },
++
++    TensorOperandsMask = {
++        MaskNone = 0,
++        NontemporalARM = 0x00000001,
++        OutOfBoundsValueARM = 0x00000002,
++        MakeElementAvailableARM = 0x00000004,
++        MakeElementVisibleARM = 0x00000008,
++        NonPrivateElementARM = 0x00000010,
++    },
++
+     InitializationModeQualifier = {
+         InitOnDeviceReprogramINTEL = 0,
+         InitOnDeviceResetINTEL = 1,
+@@ -1923,6 +1944,10 @@ spv = {
+         OpColorAttachmentReadEXT = 4160,
+         OpDepthAttachmentReadEXT = 4161,
+         OpStencilAttachmentReadEXT = 4162,
++        OpTypeTensorARM = 4163,
++        OpTensorReadARM = 4164,
++        OpTensorWriteARM = 4165,
++        OpTensorQuerySizeARM = 4166,
+         OpTerminateInvocation = 4416,
+         OpTypeUntypedPointerKHR = 4417,
+         OpUntypedVariableKHR = 4418,
+diff --git a/include/spirv/unified1/spirv.py b/include/spirv/unified1/spirv.py
+index 0351596..21ebe5b 100644
+--- a/include/spirv/unified1/spirv.py
++++ b/include/spirv/unified1/spirv.py
+@@ -1037,6 +1037,9 @@ spv = {
+         'TileImageColorReadAccessEXT' : 4166,
+         'TileImageDepthReadAccessEXT' : 4167,
+         'TileImageStencilReadAccessEXT' : 4168,
++        'TensorsARM' : 4174,
++        'StorageTensorArrayDynamicIndexingARM' : 4175,
++        'StorageTensorArrayNonUniformIndexingARM' : 4176,
+         'CooperativeMatrixLayoutsARM' : 4201,
+         'FragmentShadingRateKHR' : 4422,
+         'SubgroupBallotKHR' : 4423,
+@@ -1413,6 +1416,23 @@ spv = {
+         'DecodeFunc' : 0x00000002,
+     },
+ 
++    'TensorOperandsShift' : {
++        'NontemporalARM' : 0,
++        'OutOfBoundsValueARM' : 1,
++        'MakeElementAvailableARM' : 2,
++        'MakeElementVisibleARM' : 3,
++        'NonPrivateElementARM' : 4,
++    },
++
++    'TensorOperandsMask' : {
++        'MaskNone' : 0,
++        'NontemporalARM' : 0x00000001,
++        'OutOfBoundsValueARM' : 0x00000002,
++        'MakeElementAvailableARM' : 0x00000004,
++        'MakeElementVisibleARM' : 0x00000008,
++        'NonPrivateElementARM' : 0x00000010,
++    },
++
+     'InitializationModeQualifier' : {
+         'InitOnDeviceReprogramINTEL' : 0,
+         'InitOnDeviceResetINTEL' : 1,
+@@ -1867,6 +1887,10 @@ spv = {
+         'OpColorAttachmentReadEXT' : 4160,
+         'OpDepthAttachmentReadEXT' : 4161,
+         'OpStencilAttachmentReadEXT' : 4162,
++        'OpTypeTensorARM' : 4163,
++        'OpTensorReadARM' : 4164,
++        'OpTensorWriteARM' : 4165,
++        'OpTensorQuerySizeARM' : 4166,
+         'OpTerminateInvocation' : 4416,
+         'OpTypeUntypedPointerKHR' : 4417,
+         'OpUntypedVariableKHR' : 4418,
+diff --git a/include/spirv/unified1/spv.d b/include/spirv/unified1/spv.d
+index 9def282..c5c980c 100644
+--- a/include/spirv/unified1/spv.d
++++ b/include/spirv/unified1/spv.d
+@@ -1111,6 +1111,9 @@ enum Capability : uint
+     TileImageColorReadAccessEXT = 4166,
+     TileImageDepthReadAccessEXT = 4167,
+     TileImageStencilReadAccessEXT = 4168,
++    TensorsARM = 4174,
++    StorageTensorArrayDynamicIndexingARM = 4175,
++    StorageTensorArrayNonUniformIndexingARM = 4176,
+     CooperativeMatrixLayoutsARM = 4201,
+     FragmentShadingRateKHR = 4422,
+     SubgroupBallotKHR = 4423,
+@@ -1525,6 +1528,26 @@ enum TensorAddressingOperandsMask : uint
+     DecodeFunc = 0x00000002,
+ }
+ 
++enum TensorOperandsShift : uint
++{
++    NontemporalARM = 0,
++    OutOfBoundsValueARM = 1,
++    MakeElementAvailableARM = 2,
++    MakeElementVisibleARM = 3,
++    NonPrivateElementARM = 4,
++    Max = 0x7fffffff,
++}
++
++enum TensorOperandsMask : uint
++{
++    MaskNone = 0,
++    NontemporalARM = 0x00000001,
++    OutOfBoundsValueARM = 0x00000002,
++    MakeElementAvailableARM = 0x00000004,
++    MakeElementVisibleARM = 0x00000008,
++    NonPrivateElementARM = 0x00000010,
++}
++
+ enum InitializationModeQualifier : uint
+ {
+     InitOnDeviceReprogramINTEL = 0,
+@@ -2002,6 +2025,10 @@ enum Op : uint
+     OpColorAttachmentReadEXT = 4160,
+     OpDepthAttachmentReadEXT = 4161,
+     OpStencilAttachmentReadEXT = 4162,
++    OpTypeTensorARM = 4163,
++    OpTensorReadARM = 4164,
++    OpTensorWriteARM = 4165,
++    OpTensorQuerySizeARM = 4166,
+     OpTerminateInvocation = 4416,
+     OpTypeUntypedPointerKHR = 4417,
+     OpUntypedVariableKHR = 4418,
+diff --git a/tools/buildHeaders/jsonToSpirv.cpp b/tools/buildHeaders/jsonToSpirv.cpp
+index 0249cb3..8b77205 100644
+--- a/tools/buildHeaders/jsonToSpirv.cpp
++++ b/tools/buildHeaders/jsonToSpirv.cpp
+@@ -269,6 +269,7 @@ EnumValues CooperativeMatrixUseParams;
+ EnumValues CooperativeMatrixReduceParams;
+ EnumValues TensorClampModeParams;
+ EnumValues TensorAddressingOperandsParams;
++EnumValues TensorOperandsParams;
+ EnumValues InitializationModeQualifierParams;
+ EnumValues HostAccessQualifierParams;
+ EnumValues LoadCacheControlParams;
+@@ -439,6 +440,8 @@ ClassOptionality ToOperandClassAndOptionality(const std::string& operandKind, co
+             type = OperandCooperativeMatrixReduce;
+         } else if (operandKind == "TensorClampMode") {
+             type = OperandTensorClampMode;
++        } else if (operandKind == "TensorOperands") {
++            type = OperandTensorOperands;
+         } else if (operandKind == "InitializationModeQualifier") {
+             type = OperandInitializationModeQualifier;
+         } else if (operandKind == "HostAccessQualifier") {
+@@ -835,6 +838,8 @@ void jsonToSpirv(const std::string& jsonPath, bool buildingHeaders)
+             establishOperandClass(enumName, OperandCooperativeMatrixReduce, &CooperativeMatrixReduceParams, operandEnum, category);
+         } else if (enumName == "TensorClampMode") {
+             establishOperandClass(enumName, OperandTensorClampMode, &TensorClampModeParams, operandEnum, category);
++        } else if (enumName == "TensorOperands") {
++            establishOperandClass(enumName, OperandTensorOperands, &TensorOperandsParams, operandEnum, category);
+         } else if (enumName == "InitializationModeQualifier") {
+             establishOperandClass(enumName, OperandInitializationModeQualifier, &InitializationModeQualifierParams, operandEnum, category);
+         } else if (enumName == "HostAccessQualifier") {
+diff --git a/tools/buildHeaders/jsonToSpirv.h b/tools/buildHeaders/jsonToSpirv.h
+index 4c154d1..f94a60b 100644
+--- a/tools/buildHeaders/jsonToSpirv.h
++++ b/tools/buildHeaders/jsonToSpirv.h
+@@ -102,6 +102,7 @@ enum OperandClass {
+     OperandCooperativeMatrixReduce,
+     OperandTensorClampMode,
+     OperandTensorAddressingOperands,
++    OperandTensorOperands,
+     OperandInitializationModeQualifier,
+     OperandHostAccessQualifier,
+     OperandLoadCacheControl,
+-- 
+2.49.0
+

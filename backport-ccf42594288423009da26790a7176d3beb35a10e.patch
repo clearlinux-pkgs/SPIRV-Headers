@@ -1,0 +1,192 @@
+From ccf42594288423009da26790a7176d3beb35a10e Mon Sep 17 00:00:00 2001
+From: Ben Ashbaugh <ben.ashbaugh@intel.com>
+Date: Wed, 7 May 2025 08:39:24 -0700
+Subject: [PATCH] header updates for SPV_INTEL_int4 (#512)
+
+* header updates for SPV_INTEL_int4
+
+* add capability implicit declarations
+---
+ include/spirv/unified1/spirv.bf                |  2 ++
+ include/spirv/unified1/spirv.core.grammar.json | 13 +++++++++++++
+ include/spirv/unified1/spirv.cs                |  2 ++
+ include/spirv/unified1/spirv.h                 |  4 ++++
+ include/spirv/unified1/spirv.hpp               |  4 ++++
+ include/spirv/unified1/spirv.hpp11             |  4 ++++
+ include/spirv/unified1/spirv.json              |  2 ++
+ include/spirv/unified1/spirv.lua               |  2 ++
+ include/spirv/unified1/spirv.py                |  2 ++
+ include/spirv/unified1/spv.d                   |  2 ++
+ 10 files changed, 37 insertions(+)
+
+diff --git a/include/spirv/unified1/spirv.bf b/include/spirv/unified1/spirv.bf
+index 2fca6be..2694a27 100644
+--- a/include/spirv/unified1/spirv.bf
++++ b/include/spirv/unified1/spirv.bf
+@@ -1156,6 +1156,8 @@ namespace Spv
+             ShaderClockKHR = 5055,
+             ShaderEnqueueAMDX = 5067,
+             QuadControlKHR = 5087,
++            Int4TypeINTEL = 5112,
++            Int4CooperativeMatrixINTEL = 5114,
+             BFloat16TypeKHR = 5116,
+             BFloat16DotProductKHR = 5117,
+             BFloat16CooperativeMatrixKHR = 5118,
+diff --git a/include/spirv/unified1/spirv.core.grammar.json b/include/spirv/unified1/spirv.core.grammar.json
+index 0c4adcf..e986f61 100644
+--- a/include/spirv/unified1/spirv.core.grammar.json
++++ b/include/spirv/unified1/spirv.core.grammar.json
+@@ -16445,6 +16445,19 @@
+           "extensions" : [ "SPV_KHR_quad_control" ],
+           "version" : "None"
+         },
++        {
++          "enumerant" : "Int4TypeINTEL",
++          "value" : 5112,
++          "extensions" : [ "SPV_INTEL_int4" ],
++          "version" : "None"
++        },
++        {
++          "enumerant" : "Int4CooperativeMatrixINTEL",
++          "value" : 5114,
++          "capabilities" : [ "Int4TypeINTEL", "CooperativeMatrixKHR" ],
++          "extensions" : [ "SPV_INTEL_int4" ],
++          "version" : "None"
++        },
+         {
+           "enumerant" : "BFloat16TypeKHR",
+           "value" : 5116,
+diff --git a/include/spirv/unified1/spirv.cs b/include/spirv/unified1/spirv.cs
+index ee0d194..50943cb 100644
+--- a/include/spirv/unified1/spirv.cs
++++ b/include/spirv/unified1/spirv.cs
+@@ -1155,6 +1155,8 @@ namespace Spv
+             ShaderClockKHR = 5055,
+             ShaderEnqueueAMDX = 5067,
+             QuadControlKHR = 5087,
++            Int4TypeINTEL = 5112,
++            Int4CooperativeMatrixINTEL = 5114,
+             BFloat16TypeKHR = 5116,
+             BFloat16DotProductKHR = 5117,
+             BFloat16CooperativeMatrixKHR = 5118,
+diff --git a/include/spirv/unified1/spirv.h b/include/spirv/unified1/spirv.h
+index d8df1b3..69451bd 100644
+--- a/include/spirv/unified1/spirv.h
++++ b/include/spirv/unified1/spirv.h
+@@ -1126,6 +1126,8 @@ typedef enum SpvCapability_ {
+     SpvCapabilityShaderClockKHR = 5055,
+     SpvCapabilityShaderEnqueueAMDX = 5067,
+     SpvCapabilityQuadControlKHR = 5087,
++    SpvCapabilityInt4TypeINTEL = 5112,
++    SpvCapabilityInt4CooperativeMatrixINTEL = 5114,
+     SpvCapabilityBFloat16TypeKHR = 5116,
+     SpvCapabilityBFloat16DotProductKHR = 5117,
+     SpvCapabilityBFloat16CooperativeMatrixKHR = 5118,
+@@ -4016,6 +4018,8 @@ inline const char* SpvCapabilityToString(SpvCapability value) {
+     case SpvCapabilityShaderClockKHR: return "ShaderClockKHR";
+     case SpvCapabilityShaderEnqueueAMDX: return "ShaderEnqueueAMDX";
+     case SpvCapabilityQuadControlKHR: return "QuadControlKHR";
++    case SpvCapabilityInt4TypeINTEL: return "Int4TypeINTEL";
++    case SpvCapabilityInt4CooperativeMatrixINTEL: return "Int4CooperativeMatrixINTEL";
+     case SpvCapabilityBFloat16TypeKHR: return "BFloat16TypeKHR";
+     case SpvCapabilityBFloat16DotProductKHR: return "BFloat16DotProductKHR";
+     case SpvCapabilityBFloat16CooperativeMatrixKHR: return "BFloat16CooperativeMatrixKHR";
+diff --git a/include/spirv/unified1/spirv.hpp b/include/spirv/unified1/spirv.hpp
+index bb69071..7b4f205 100644
+--- a/include/spirv/unified1/spirv.hpp
++++ b/include/spirv/unified1/spirv.hpp
+@@ -1122,6 +1122,8 @@ enum Capability {
+     CapabilityShaderClockKHR = 5055,
+     CapabilityShaderEnqueueAMDX = 5067,
+     CapabilityQuadControlKHR = 5087,
++    CapabilityInt4TypeINTEL = 5112,
++    CapabilityInt4CooperativeMatrixINTEL = 5114,
+     CapabilityBFloat16TypeKHR = 5116,
+     CapabilityBFloat16DotProductKHR = 5117,
+     CapabilityBFloat16CooperativeMatrixKHR = 5118,
+@@ -4012,6 +4014,8 @@ inline const char* CapabilityToString(Capability value) {
+     case CapabilityShaderClockKHR: return "ShaderClockKHR";
+     case CapabilityShaderEnqueueAMDX: return "ShaderEnqueueAMDX";
+     case CapabilityQuadControlKHR: return "QuadControlKHR";
++    case CapabilityInt4TypeINTEL: return "Int4TypeINTEL";
++    case CapabilityInt4CooperativeMatrixINTEL: return "Int4CooperativeMatrixINTEL";
+     case CapabilityBFloat16TypeKHR: return "BFloat16TypeKHR";
+     case CapabilityBFloat16DotProductKHR: return "BFloat16DotProductKHR";
+     case CapabilityBFloat16CooperativeMatrixKHR: return "BFloat16CooperativeMatrixKHR";
+diff --git a/include/spirv/unified1/spirv.hpp11 b/include/spirv/unified1/spirv.hpp11
+index bc4485d..c10d2e4 100644
+--- a/include/spirv/unified1/spirv.hpp11
++++ b/include/spirv/unified1/spirv.hpp11
+@@ -1122,6 +1122,8 @@ enum class Capability : unsigned {
+     ShaderClockKHR = 5055,
+     ShaderEnqueueAMDX = 5067,
+     QuadControlKHR = 5087,
++    Int4TypeINTEL = 5112,
++    Int4CooperativeMatrixINTEL = 5114,
+     BFloat16TypeKHR = 5116,
+     BFloat16DotProductKHR = 5117,
+     BFloat16CooperativeMatrixKHR = 5118,
+@@ -4012,6 +4014,8 @@ inline const char* CapabilityToString(Capability value) {
+     case Capability::ShaderClockKHR: return "ShaderClockKHR";
+     case Capability::ShaderEnqueueAMDX: return "ShaderEnqueueAMDX";
+     case Capability::QuadControlKHR: return "QuadControlKHR";
++    case Capability::Int4TypeINTEL: return "Int4TypeINTEL";
++    case Capability::Int4CooperativeMatrixINTEL: return "Int4CooperativeMatrixINTEL";
+     case Capability::BFloat16TypeKHR: return "BFloat16TypeKHR";
+     case Capability::BFloat16DotProductKHR: return "BFloat16DotProductKHR";
+     case Capability::BFloat16CooperativeMatrixKHR: return "BFloat16CooperativeMatrixKHR";
+diff --git a/include/spirv/unified1/spirv.json b/include/spirv/unified1/spirv.json
+index 7c4f9db..448796e 100644
+--- a/include/spirv/unified1/spirv.json
++++ b/include/spirv/unified1/spirv.json
+@@ -1098,6 +1098,8 @@
+                     "ShaderClockKHR": 5055,
+                     "ShaderEnqueueAMDX": 5067,
+                     "QuadControlKHR": 5087,
++                    "Int4TypeINTEL": 5112,
++                    "Int4CooperativeMatrixINTEL": 5114,
+                     "BFloat16TypeKHR": 5116,
+                     "BFloat16DotProductKHR": 5117,
+                     "BFloat16CooperativeMatrixKHR": 5118,
+diff --git a/include/spirv/unified1/spirv.lua b/include/spirv/unified1/spirv.lua
+index 6cae8ce..c20402d 100644
+--- a/include/spirv/unified1/spirv.lua
++++ b/include/spirv/unified1/spirv.lua
+@@ -1113,6 +1113,8 @@ spv = {
+         ShaderClockKHR = 5055,
+         ShaderEnqueueAMDX = 5067,
+         QuadControlKHR = 5087,
++        Int4TypeINTEL = 5112,
++        Int4CooperativeMatrixINTEL = 5114,
+         BFloat16TypeKHR = 5116,
+         BFloat16DotProductKHR = 5117,
+         BFloat16CooperativeMatrixKHR = 5118,
+diff --git a/include/spirv/unified1/spirv.py b/include/spirv/unified1/spirv.py
+index 7f6e8e8..0351596 100644
+--- a/include/spirv/unified1/spirv.py
++++ b/include/spirv/unified1/spirv.py
+@@ -1084,6 +1084,8 @@ spv = {
+         'ShaderClockKHR' : 5055,
+         'ShaderEnqueueAMDX' : 5067,
+         'QuadControlKHR' : 5087,
++        'Int4TypeINTEL' : 5112,
++        'Int4CooperativeMatrixINTEL' : 5114,
+         'BFloat16TypeKHR' : 5116,
+         'BFloat16DotProductKHR' : 5117,
+         'BFloat16CooperativeMatrixKHR' : 5118,
+diff --git a/include/spirv/unified1/spv.d b/include/spirv/unified1/spv.d
+index 63f6690..9def282 100644
+--- a/include/spirv/unified1/spv.d
++++ b/include/spirv/unified1/spv.d
+@@ -1158,6 +1158,8 @@ enum Capability : uint
+     ShaderClockKHR = 5055,
+     ShaderEnqueueAMDX = 5067,
+     QuadControlKHR = 5087,
++    Int4TypeINTEL = 5112,
++    Int4CooperativeMatrixINTEL = 5114,
+     BFloat16TypeKHR = 5116,
+     BFloat16DotProductKHR = 5117,
+     BFloat16CooperativeMatrixKHR = 5118,
+-- 
+2.49.0
+

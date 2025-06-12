@@ -1,0 +1,29 @@
+From bab63ff679c41eb75fc67dac76e1dc44426101e1 Mon Sep 17 00:00:00 2001
+From: Caio Oliveira <caio.oliveira@intel.com>
+Date: Wed, 23 Apr 2025 08:58:05 -0700
+Subject: [PATCH] Remove reference to EXT_mesh_shader from PerTaskNV decoration
+ (#510)
+
+That decoration is used only by the NV_mesh_shader extension.
+---
+ include/spirv/unified1/spirv.core.grammar.json | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/include/spirv/unified1/spirv.core.grammar.json b/include/spirv/unified1/spirv.core.grammar.json
+index 1350da4..8288f42 100644
+--- a/include/spirv/unified1/spirv.core.grammar.json
++++ b/include/spirv/unified1/spirv.core.grammar.json
+@@ -14138,8 +14138,8 @@
+         {
+           "enumerant" : "PerTaskNV",
+           "value" : 5273,
+-          "capabilities" : [ "MeshShadingNV", "MeshShadingEXT" ],
+-          "extensions" : [ "SPV_NV_mesh_shader", "SPV_EXT_mesh_shader" ],
++          "capabilities" : [ "MeshShadingNV" ],
++          "extensions" : [ "SPV_NV_mesh_shader" ],
+           "version" : "None"
+         },
+         {
+-- 
+2.49.0
+
